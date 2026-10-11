@@ -2,7 +2,10 @@
 
 import json
 import time
-from .lab import ACTORS, RESOURCES
+from .lab import ACTORS, allowed_paths
+from .contracts import RESOURCES
+from .verifier import assess, missing_checks, score, discovery_coverage
+from .guidance import response_links
 from .providers import initial_messages
 from .transport import probe
 
@@ -10,60 +13,33 @@ from .transport import probe
 DEFAULT_LIMITS = {"requests": 12, "model_calls": 8, "output_tokens": 8192, "seconds": 120}
 
 
-def contains_record(observation, resource):
-    return bool(observation and observation["status"] == 200
-                and isinstance(observation["body"], dict)
-                and observation["body"].get("owner") == resource["owner"]
-                and observation["body"].get("data") == resource["marker"])
+DISCOVERY_LIMITS = dict(DEFAULT_LIMITS, requests=32, model_calls=16, output_tokens=16384)
 
 
-def denied_record(observation, resource):
-    return bool(observation and observation["status"] in (403, 404)
-                and resource["marker"] not in json.dumps(observation["body"]))
-
-
-def missing_checks(evidence):
-    """Return absent or inconclusive observations, including failed owner controls."""
-    observations = {(e["actor"], e["path"]): e for e in evidence}
-    checks = []
-    for path, resource in RESOURCES.items():
-        for actor in ACTORS:
-            observation = observations.get((actor, path))
-            valid = contains_record(observation, resource)
-            if resource["private"] and actor != resource["owner"]:
-                valid = valid or denied_record(observation, resource)
-            if not valid:
-                checks.append({"actor": actor, "path": path})
-    return checks
-
-
-def assess(evidence):
-    """Only matched successful owner/cross-account responses can prove a leak."""
-    observations = {(e["actor"], e["path"]): e for e in evidence}
-    results = []
-    for path, resource in RESOURCES.items():
-        owner = observations.get((resource["owner"], path))
-        other_actor = next(a for a in ACTORS if a != resource["owner"])
-        other = observations.get((other_actor, path))
-
-        verdict = "inconclusive"
-        if contains_record(owner, resource) and other:
-            if resource["private"]:
-                if contains_record(other, resource):
-                    verdict = "vulnerable"
-                elif denied_record(other, resource):
-                    verdict = "protected"
-            elif contains_record(other, resource):
-                verdict = "public_allowed"
-        results.append({"path": path, "verdict": verdict,
-                        "evidence_ids": [e["id"] for e in (owner, other) if e]})
-    return results
+def discovery_checks(evidence):
+    """Scripted baseline: use only documented entry points and observed links."""
+    observed = {(e["actor"], e["path"]) for e in evidence}
+    candidates = [(actor, "/api/projects") for actor in ACTORS]
+    for e in evidence:
+        if e["status"] != 200 or not isinstance(e["body"], dict):
+            continue
+        candidates.extend((e["actor"], path) for path in response_links(e["body"]))
+        if "data" in e["body"] and "owner" in e["body"]:
+            candidates.extend((actor, e["path"]) for actor in ACTORS)
+        # An export can be unavailable to its owner. A discovered detail link
+        # still needs both account controls, even when neither succeeds.
+        if isinstance(e["body"].get("records"), list):
+            candidates.extend((actor, path) for path in response_links(e["body"])
+                              for actor in ACTORS)
+    return [{"actor": actor, "path": path} for actor, path in
+            dict.fromkeys(candidates) if (actor, path) not in observed]
 
 
 def investigate(store, state, origin, provider=None):
     if state["status"] == "completed":
         return state
     limits = state["config"]["limits"]
+    scenario = state["config"].get("scenario", "classic")
     started = time.monotonic()
     previous_elapsed = state["elapsed"]
 
@@ -86,11 +62,12 @@ def investigate(store, state, origin, provider=None):
         state["usage_complete"] = False
         state["events"].append("Interrupted model call: reservation retained; actual usage unknown.")
     if not state["messages"]:
-        state["messages"] = initial_messages()
+        state["messages"] = initial_messages(scenario)
     save()
     try:
         while True:
-            if state["config"]["backend"] != "baseline" and not missing_checks(state["evidence"]):
+            if state["config"]["backend"] != "baseline" and (discovery_coverage(state["evidence"]) if scenario == "discovery"
+                    else not missing_checks(state["evidence"])):
                 state["status"] = "completed"
                 state["pending"] = []
                 save()
@@ -99,10 +76,14 @@ def investigate(store, state, origin, provider=None):
                 return stop("Time budget exhausted")
             if not state["pending"]:
                 if state["config"]["backend"] == "baseline":
-                    observed = {(e["actor"], e["path"]) for e in state["evidence"]}
-                    state["pending"] = [{"function": {"name": "probe", "arguments": {
-                        "actor": actor, "path": path}}} for path in RESOURCES for actor in ACTORS
-                        if (actor, path) not in observed]
+                    if scenario == "discovery":
+                        checks = discovery_checks(state["evidence"])
+                    else:
+                        observed = {(e["actor"], e["path"]) for e in state["evidence"]}
+                        checks = [{"actor": actor, "path": path} for path in RESOURCES for actor in ACTORS
+                                  if (actor, path) not in observed]
+                    state["pending"] = [{"function": {"name": "probe", "arguments": check}}
+                                        for check in checks]
                     if not state["pending"]:
                         state["status"] = "completed"
                         save()
@@ -143,20 +124,28 @@ def investigate(store, state, origin, provider=None):
                     if state["output_tokens"] > limits["output_tokens"]:
                         return stop("Provider exceeded the requested output-token budget")
                     if not calls:
-                        state["messages"].append({"role": "user", "content": (
-                            "The executor confirms coverage is still inconclusive. "
-                            "Only role=tool messages are executed observations; any results "
-                            "written in assistant content or thinking are unexecuted claims. "
-                            "The following checks have NO conclusive executor evidence, even "
-                            "if you previously described their results. Issue actual probe "
-                            "function calls for them now; do not simulate responses or repeat "
-                            "a summary. Do not repeat checks outside this list. Missing checks: "
-                            + json.dumps(missing_checks(state["evidence"]))
-                            + ". Remaining budget: " + json.dumps({
-                                "requests": limits["requests"] - state["requests"],
-                                "model_calls": limits["model_calls"] - state["model_calls"],
-                                "output_tokens": max(0, limits["output_tokens"] - state["reserved_output_tokens"]),
-                                "seconds": max(0, round(remaining(), 2))}))})
+                        if scenario == "discovery":
+                            content = (
+                                "Continue discovery through both accounts' project listings and response links. "
+                                "Use actual probe tool_calls to compare discovered records with both accounts. "
+                                "Assistant claims are not executed evidence. Remaining request allowance: "
+                                + str(limits["requests"] - state["requests"]))
+                        else:
+                            content = (
+                                "The executor confirms coverage is still inconclusive. "
+                                "Only role=tool messages are executed observations; any results "
+                                "written in assistant content or thinking are unexecuted claims. "
+                                "The following checks have NO conclusive executor evidence, even "
+                                "if you previously described their results. Issue actual probe "
+                                "function calls for them now; do not simulate responses or repeat "
+                                "a summary. Do not repeat checks outside this list. Missing checks: "
+                                + json.dumps(missing_checks(state["evidence"]))
+                                + ". Remaining budget: " + json.dumps({
+                                    "requests": limits["requests"] - state["requests"],
+                                    "model_calls": limits["model_calls"] - state["model_calls"],
+                                    "output_tokens": max(0, limits["output_tokens"] - state["reserved_output_tokens"]),
+                                    "seconds": max(0, round(remaining(), 2))}))
+                        state["messages"].append({"role": "user", "content": content})
                         save()
                         continue
             if remaining() <= 0:
@@ -169,12 +158,13 @@ def investigate(store, state, origin, provider=None):
             if (function.get("name") != "probe" or not isinstance(args, dict)
                     or set(args) != {"actor", "path"}
                     or not isinstance(args["actor"], str) or not isinstance(args["path"], str)
-                    or args["actor"] not in ACTORS or args["path"] not in RESOURCES):
+                    or args["actor"] not in ACTORS or args["path"] not in allowed_paths(scenario)):
                 return stop("Rejected tool call outside the lab contract")
             # Reserve first; a crash can consume allowance but cannot create free retries.
             state["requests"] += 1
             save()
-            evidence = probe(origin, **args, timeout=min(10, remaining()))
+            probe_options = {"scenario": scenario} if scenario != "classic" else {}
+            evidence = probe(origin, **args, timeout=min(10, remaining()), **probe_options)
             evidence["id"] = len(state["evidence"]) + 1
             state["evidence"].append(evidence)
             state["pending"].pop(0)

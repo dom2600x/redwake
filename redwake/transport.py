@@ -1,4 +1,4 @@
-"""Bounded HTTP with no redirects or environment proxy inheritance."""
+"""Bounded HTTP; lab requests bypass proxies, cloud requests preserve them."""
 
 import json
 import time
@@ -11,8 +11,9 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
-def request_json(url, headers=None, payload=None, timeout=10, limit=65536):
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+def request_json(url, headers=None, payload=None, timeout=10, limit=65536, use_proxy=False):
+    proxy = urllib.request.ProxyHandler() if use_proxy else urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy, NoRedirect())
     data = None if payload is None else json.dumps(payload).encode()
     request = urllib.request.Request(url, data=data, headers=headers or {})
     started = time.monotonic()
@@ -34,8 +35,8 @@ def request_json(url, headers=None, payload=None, timeout=10, limit=65536):
         return response.code, body
 
 
-def probe(origin, actor, path, timeout=10):
-    from .lab import ACTORS, RESOURCES
+def probe(origin, actor, path, timeout=10, scenario="classic"):
+    from .lab import ACTORS, allowed_paths
     from urllib.parse import urlsplit
 
     parsed = urlsplit(origin)
@@ -43,7 +44,7 @@ def probe(origin, actor, path, timeout=10):
             or parsed.username or parsed.password or parsed.path
             or parsed.query or parsed.fragment or not parsed.port):
         raise ValueError("Only the exact loopback lab origin is supported")
-    if actor not in ACTORS or path not in RESOURCES:
+    if actor not in ACTORS or path not in allowed_paths(scenario):
         raise ValueError("Actor or path outside the lab contract")
     status, body = request_json(origin + path,
                                 {"Authorization": "Bearer " + ACTORS[actor]}, timeout=timeout)
