@@ -59,9 +59,9 @@ class ComparisonTests(unittest.TestCase):
         with patch.dict('os.environ', {'OLLAMA_API_KEY': 'synthetic'}), patch(
                 'redwake.providers.request_json', return_value=response) as request:
             Ollama('test').chat([], 100, 10)
-            self.assertTrue(request.call_args.kwargs['use_proxy'])
+            self.assertTrue(request.call_args.kwargs['use_env_proxy'])
             Ollama('test', 'http://127.0.0.1:11434').chat([], 100, 10)
-            self.assertFalse(request.call_args.kwargs['use_proxy'])
+            self.assertFalse(request.call_args.kwargs['use_env_proxy'])
 
     def test_transport_default_explicitly_disables_environment_proxy(self):
         with patch('redwake.transport.urllib.request.ProxyHandler') as proxy, patch(
@@ -72,7 +72,7 @@ class ComparisonTests(unittest.TestCase):
             proxy.assert_called_once_with({})
             proxy.reset_mock()
             with self.assertRaises(TimeoutError):
-                request_json('https://ollama.com/api/chat', use_proxy=True)
+                request_json('https://ollama.com/api/chat', use_env_proxy=True)
             proxy.assert_called_once_with()
 
 

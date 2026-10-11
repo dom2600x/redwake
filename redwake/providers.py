@@ -42,7 +42,8 @@ class Ollama:
         status, response = request_json(self.endpoint + "/api/chat", headers, {
             "model": self.model, "messages": messages, "tools": TOOLS, "stream": False,
             "options": {"temperature": 0, "num_predict": output_limit}},
-            timeout=timeout, limit=1048576, use_proxy=self.endpoint == "https://ollama.com")
+            timeout=timeout, limit=1048576,
+            use_env_proxy=self.endpoint == "https://ollama.com")
         if status != 200:
             # Do not copy arbitrary provider errors or credentials into reports.
             raise RuntimeError("Ollama returned HTTP %d" % status)
