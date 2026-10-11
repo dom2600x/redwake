@@ -2,7 +2,7 @@
 
 Find weaknesses. Prove impact.
 
-Redwake is an early research prototype for evidence-backed API authorisation testing. It runs a synthetic application on an ephemeral loopback port, investigates its access rules, and produces reproducible request/response evidence. The first milestone is deliberately small: establish a trustworthy executor and a scripted baseline before measuring whether a model improves investigations.
+Redwake is an early research prototype for evidence-backed API authorisation testing. It runs a synthetic application on an ephemeral loopback port, investigates its access rules, and produces reproducible request/response evidence. It includes classic and discovery labs, a scripted baseline, and repeatable model comparisons.
 
 ## Run it
 
@@ -23,7 +23,7 @@ The discovery scenario starts with account-specific project listings, follows ne
 
 See the captured [example report](docs/example-report.md) and [initial validation results](docs/validation.md).
 
-The [first live Ollama comparison](docs/model-comparison.md) records twelve successful cloud investigations across GPT-OSS 120B, Nemotron 3 Super and Nemotron 3 Ultra.
+Experiment reports are available for the [classic lab](docs/model-comparison.md) and [discovery lab](docs/discovery-model-comparison.md).
 
 Run a repeatable discovery comparison with the scripted baseline and all three models:
 
@@ -31,7 +31,7 @@ Run a repeatable discovery comparison with the scripted baseline and all three m
 python3 -m redwake.comparison --repeat 3
 ```
 
-Each model and baseline runs both vulnerable and fixed discovery behaviour in each repetition. Model order rotates between blocks; inference runs serially with equal budgets. The batch retains stopped runs and writes SQLite state, individual reports and `comparison.json` under a fresh `.redwake/discovery-comparison-<timestamp>/` directory. This command makes live Ollama Cloud calls and requires the configured API key. See the [live discovery results](docs/discovery-model-comparison.md).
+Each model and baseline runs both vulnerable and fixed discovery behaviour in each repetition. Model order rotates between blocks; inference runs serially with equal budgets. The batch retains stopped runs and writes SQLite state, individual reports and `comparison.json` under a fresh `.redwake/discovery-comparison-<timestamp>/` directory. This command makes live Ollama Cloud calls and requires the configured API key. Reports record correct findings, missed flaws, false positives, requests, returned tokens and active time. Scores grade verifier-proven findings, not model prose.
 
 ```sh
 python3 -m redwake resume RUN_ID
@@ -94,11 +94,12 @@ The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment
 - `store.py`: SQLite checkpoints.
 - `report.py`: Markdown and JSON artifacts.
 - `cli.py`: demo, evaluation, resume and offline replay.
+- `comparison.py`: repeated baseline and live model comparisons.
 
 The CLI takes an exclusive database lock to prevent concurrent writers from reusing allowances. An interrupted read may be retried on resume, with a new reservation; probes are read-only. The library itself is intended for a single runner per database. Stored evidence is a local research artifact, not a signed audit trail.
 
-## Current limits and next milestone
+## Current limitations
 
 This is a lab harness, not a general penetration-testing product. It does not yet support external targets, arbitrary access contracts, container isolation, mutation testing, monetary accounting or proof of model capability. The lab runs in a local Python thread with synthetic data and is not a container sandbox.
 
-The discovery comparison now runs GPT-OSS, Super and Ultra alongside the scripted baseline. Reports and baseline evaluations now record correct findings, missed flaws, false positives, requests, returned tokens and active time. Scores grade verifier-proven findings, not model prose. General target support should follow only after the access contract, scope enforcement and evidence model can represent it accurately.
+See the [roadmap](docs/roadmap.md) for planned work.
