@@ -1,5 +1,16 @@
 # Initial validation
 
+## Cloud proxy compatibility validation
+
+2026-10-11, managed Linux cloud environment, Python 3.12.
+
+- `python3 -m unittest discover -s tests -v`: all 28 tests passed with socket access. New regressions exercise a real environment-selected proxy, redirect refusal and response limits through that proxy, direct lab traffic with an empty `NO_PROXY`, and cloud/local adapter proxy selection.
+- `python3 -m redwake demo --backend ollama --model gpt-oss:120b`: run `a5ad25dba4d8` completed with default budgets through the required environment proxy, using the configured credential and default TLS verification. Both private resources were classified `vulnerable`; the public control was `public_allowed`. Six lab probes and six model calls recorded 4,049 input tokens and 382 output tokens, with complete provider usage.
+
+The transport previously disabled environment proxies for every request. Only Ollama Cloud now opts into standard proxy inheritance; local Ollama and lab probes remain direct. The live report and evidence are saved under `.redwake/reports/a5ad25dba4d8/` in this workspace. Socket-based tests and the demo required running outside the command sandbox, which disallows socket creation.
+
+## Original validation
+
 2026-10-10, macOS, Python 3.9.6.
 
 - `python3 -m unittest discover -s tests -v`: 26 tests passed, including missing-check recovery and tool-call transcript preservation.

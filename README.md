@@ -44,7 +44,9 @@ python3 -m redwake demo --backend ollama --model gpt-oss:120b
 python3 -m redwake demo --backend ollama --model nemotron-3-super
 ```
 
-Model identifiers and account access must be confirmed with Ollama. Direct cloud requests use `https://ollama.com/api/chat`; the adapter follows the official [cloud API](https://docs.ollama.com/cloud), [chat reference](https://docs.ollama.com/api/chat) and [tool-calling contract](https://docs.ollama.com/capabilities/tool-calling). Only synthetic lab observations and the model conversation are sent. Credentials are read from the environment and are not written to run state.
+Model identifiers and account access must be confirmed with Ollama. Cloud requests use `https://ollama.com/api/chat`; the adapter follows the official [cloud API](https://docs.ollama.com/cloud), [chat reference](https://docs.ollama.com/api/chat) and [tool-calling contract](https://docs.ollama.com/capabilities/tool-calling). Only synthetic lab observations and the model conversation are sent. Credentials are read from the environment and are not written to run state.
+
+Cloud calls inherit standard environment proxy settings (`HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`) and Python's configured CA trust, with TLS verification enabled. This supports managed cloud environments that require an outbound proxy. Lab probes and local Ollama calls always connect directly, without inheriting proxies.
 
 A running local Ollama server is also supported:
 
@@ -67,7 +69,7 @@ These are experiment controls, **not a dollar spending cap**. Prompt tokens also
 | `public_allowed` | Both actors receive a record explicitly declared public |
 | `inconclusive` | Missing controls, errors, unexpected payloads, or insufficient evidence |
 
-The model selects requests through one `probe(actor, path)` tool. The executor checks exact actor and path allowlists and uses only the current loopback lab. There is no shell tool, arbitrary URL, write operation, redirect following, or proxy inheritance. Final model prose is not accepted as a finding. The verifier uses known synthetic record markers and the declared ownership contract.
+The model selects requests through one `probe(actor, path)` tool. The executor checks exact actor and path allowlists and uses only the current loopback lab. There is no shell tool, arbitrary URL, write operation, redirect following, or proxy inheritance for lab probes. Final model prose is not accepted as a finding. The verifier uses known synthetic record markers and the declared ownership contract.
 
 The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment and a 503 outage, each with two private resources and a public resource. Repetitions measure stability of this fixture; they do not create independent vulnerability classes. A completed baseline run means its probes finished, even if an outage leaves all verdicts inconclusive. If a model finishes early, Redwake prompts it with the missing or inconclusive checks and remaining budget, then continues the investigation. Model runs become completed as soon as coverage is conclusive, without spending another model call on a closing summary. Unresolved runs stop when a budget is exhausted or an operation fails.
 

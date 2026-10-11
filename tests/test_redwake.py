@@ -285,6 +285,59 @@ class RedwakeTests(unittest.TestCase):
         self.assertEqual(args[0], "https://ollama.com/api/chat")
         self.assertEqual(args[2]["options"]["num_predict"], 100)
         self.assertFalse(args[2]["stream"])
+        self.assertTrue(request.call_args.kwargs["use_env_proxy"])
+
+    def test_local_provider_does_not_inherit_proxy_or_cloud_key(self):
+        response = {"message": {"role": "assistant", "content": "done"}}
+        with patch.dict("os.environ", {"OLLAMA_API_KEY": "test-key"}), patch(
+                "redwake.providers.request_json", return_value=(200, response)) as request:
+            Ollama("test-model", "http://127.0.0.1:11434").chat([], 100, 5)
+        self.assertFalse(request.call_args.kwargs["use_env_proxy"])
+        self.assertNotIn("Authorization", request.call_args.args[1])
+
+    def test_environment_proxy_routing_keeps_lab_direct_and_refuses_redirects(self):
+        visits = []
+
+        class Proxy(BaseHTTPRequestHandler):
+            def do_POST(self):
+                visits.append(self.path)
+                self.rfile.read(int(self.headers.get("Content-Length", 0)))
+                self.send_response(302 if self.path.endswith("/redirect") else 200)
+                self.send_header("Location", "http://provider.invalid/destination")
+                self.end_headers()
+                self.wfile.write(b'{"message":{"role":"assistant","content":"OK"}}')
+
+            def log_message(self, *_):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Proxy)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        proxy_url = "http://127.0.0.1:%d" % server.server_port
+        try:
+            with patch.dict("os.environ", {"http_proxy": proxy_url, "https_proxy": proxy_url,
+                                           "no_proxy": ""}, clear=True):
+                # An unresolvable destination succeeds only through this proxy.
+                status, body = request_json("http://provider.invalid/api/chat", payload={},
+                                            use_env_proxy=True)
+                self.assertEqual(status, 200)
+                self.assertEqual(body["message"]["content"], "OK")
+                self.assertEqual(request_json("http://provider.invalid/redirect", payload={},
+                                              use_env_proxy=True)[0], 302)
+                with lab() as origin:
+                    self.assertEqual(probe(origin, "alice", "/api/documents/101")["status"], 200)
+                    # Local provider transport also works when NO_PROXY is empty.
+                    self.assertEqual(request_json(origin + "/api/documents/101",
+                                                  {"Authorization": "Bearer " + ACTORS["alice"]})[0], 200)
+                self.assertEqual(visits, ["http://provider.invalid/api/chat",
+                                          "http://provider.invalid/redirect"])
+                with self.assertRaises(ValueError):
+                    request_json("http://provider.invalid/large", payload={}, limit=5,
+                                 use_env_proxy=True)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
 
     def test_redirects_are_not_followed_and_responses_are_bounded(self):
         visits = []
