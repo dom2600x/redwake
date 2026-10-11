@@ -1,13 +1,14 @@
 # Roadmap
 
 Redwake develops the lab harness and its evidence model before adding external
-targets. Experiment results live in their own reports; this document records the
-sequence of planned work.
+targets. This is the canonical sequence of planned work. Dated experiment reports
+record observations and limitations; the [documentation index](README.md) links
+to those reports and their retained evidence.
 
 ## Completed foundations
 
 - A bounded loopback executor, durable accounting, evidence replay and a scripted
-  baseline. See [initial validation](validation.md).
+  baseline. See [initial Mac validation](experiments/2026-10-10-mac/validation.md).
 - A [discovery lab](discovery-lab.md) with account-specific project listings,
   nested records and detail links, covering vulnerable, protected, public and
   outage cases.
@@ -15,7 +16,7 @@ sequence of planned work.
   expectations.
 - A repeatable comparison of the scripted baseline, GPT-OSS, Super and Ultra,
   recording findings, misses, false positives, requests, tokens and active time.
-  See the [live discovery comparison](discovery-model-comparison.md).
+  See the [live discovery comparison](experiments/2026-10-11-discovery/report.md).
 
 ## Next experiments
 

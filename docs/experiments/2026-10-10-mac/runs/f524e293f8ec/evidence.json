@@ -1,0 +1,56 @@
+[
+  {
+    "actor": "alice",
+    "path": "/api/documents/101",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 1
+  },
+  {
+    "actor": "bob",
+    "path": "/api/documents/101",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 2
+  },
+  {
+    "actor": "alice",
+    "path": "/api/invoices/inv_b7",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 3
+  },
+  {
+    "actor": "bob",
+    "path": "/api/invoices/inv_b7",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 4
+  },
+  {
+    "actor": "alice",
+    "path": "/api/documents/public",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 5
+  },
+  {
+    "actor": "bob",
+    "path": "/api/documents/public",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 6
+  }
+]

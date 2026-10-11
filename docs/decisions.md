@@ -2,6 +2,11 @@
 
 Date: 2026-10-10
 
+This records the initial classic-lab design. For current discovery guidance and
+the separation of model-facing documentation from private verifier truth, see
+the [discovery lab guide](discovery-lab.md). Planned work lives in the
+[roadmap](roadmap.md).
+
 The project starts as a Python CLI with no runtime dependencies. This makes the first lab runnable on the existing Mac without provisioning infrastructure. SQLite retains investigation state. A standard-library HTTP lab gives us actual requests and responses while keeping all records synthetic.
 
 The lab-only target is an intentional first boundary. Scope is enforced by code, not model instructions. Models see actor aliases and a resource access contract. They never receive lab bearer credentials or permission to choose an origin. An independent verifier checks owner controls and exact record markers; it does not trust the model's conclusion.

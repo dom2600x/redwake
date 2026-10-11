@@ -1,7 +1,7 @@
 # Discovery lab
 
-The immediate roadmap milestone adds resource discovery before access testing. The
-classic fixture and old saved runs remain supported; choose the new scenario with
+The discovery scenario adds resource discovery before access testing. The
+classic fixture and old saved runs remain supported; choose the scenario with
 `--scenario discovery`.
 
 ```sh
@@ -80,14 +80,17 @@ classes. Repetitions test fixture stability, not general model capability.
 
 Run the repeated live comparison with `python3 -m redwake.comparison --repeat 3`.
 It uses the same discovery scenario and allowances, with the scripted baseline in
-every block. See [live discovery results](discovery-model-comparison.md).
+every block. See the retained [live discovery results](experiments/2026-10-11-discovery/report.md)
+and the [artifact guide](artifacts.md) for the distinction between local run state
+and published evidence.
 No live model calls are required to validate the lab implementation.
 
-## Implementation validation
+## Initial implementation validation (2026-10-11)
 
 Validated on 2026-10-11 using Python 3.12 in the managed Linux workspace:
 37 tests passed, including all 26 existing tests. Three baseline repetitions of
-each mode passed for both scenarios (24 runs total).
+each mode passed for both scenarios (24 runs total). These counts describe that
+implementation snapshot, not the current test suite or the later live comparison.
 
 | Discovery mode | Runs passed | Requests per run | Correct findings | Missed flaws | False positives |
 |---|---|---|---|---|---|

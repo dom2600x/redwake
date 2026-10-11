@@ -1,0 +1,24 @@
+{
+  "run_id": "98e26ef93957",
+  "results": [
+    {
+      "path": "/api/documents/101",
+      "verdict": "vulnerable",
+      "evidence_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "path": "/api/invoices/inv_b7",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/documents/public",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    }
+  ],
+  "status": "stopped"
+}
