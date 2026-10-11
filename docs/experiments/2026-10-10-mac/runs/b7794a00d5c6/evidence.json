@@ -1,0 +1,60 @@
+[
+  {
+    "actor": "alice",
+    "path": "/api/documents/101",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "alice-private-document"
+    },
+    "id": 1
+  },
+  {
+    "actor": "bob",
+    "path": "/api/documents/101",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 2
+  },
+  {
+    "actor": "alice",
+    "path": "/api/invoices/inv_b7",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 3
+  },
+  {
+    "actor": "bob",
+    "path": "/api/invoices/inv_b7",
+    "status": 200,
+    "body": {
+      "owner": "bob",
+      "data": "bob-private-invoice"
+    },
+    "id": 4
+  },
+  {
+    "actor": "alice",
+    "path": "/api/documents/public",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "public-handbook"
+    },
+    "id": 5
+  },
+  {
+    "actor": "bob",
+    "path": "/api/documents/public",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "public-handbook"
+    },
+    "id": 6
+  }
+]

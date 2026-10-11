@@ -1,0 +1,22 @@
+[
+  {
+    "actor": "alice",
+    "path": "/api/documents/101",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "alice-private-document"
+    },
+    "id": 1
+  },
+  {
+    "actor": "bob",
+    "path": "/api/documents/101",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "alice-private-document"
+    },
+    "id": 2
+  }
+]

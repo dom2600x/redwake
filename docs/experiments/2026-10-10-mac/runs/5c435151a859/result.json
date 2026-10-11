@@ -1,0 +1,30 @@
+{
+  "run_id": "5c435151a859",
+  "results": [
+    {
+      "path": "/api/documents/101",
+      "verdict": "protected",
+      "evidence_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "path": "/api/invoices/inv_b7",
+      "verdict": "protected",
+      "evidence_ids": [
+        4,
+        3
+      ]
+    },
+    {
+      "path": "/api/documents/public",
+      "verdict": "public_allowed",
+      "evidence_ids": [
+        5,
+        6
+      ]
+    }
+  ],
+  "status": "completed"
+}

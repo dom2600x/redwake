@@ -1,0 +1,134 @@
+[
+  {
+    "mode": "vulnerable",
+    "repeat": 1,
+    "run_id": "967fe3851ee8",
+    "verdicts": [
+      "vulnerable",
+      "vulnerable",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "fixed",
+    "repeat": 1,
+    "run_id": "307d56965f2f",
+    "verdicts": [
+      "protected",
+      "protected",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "concealed",
+    "repeat": 1,
+    "run_id": "505a9fb636d4",
+    "verdicts": [
+      "protected",
+      "protected",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "broken",
+    "repeat": 1,
+    "run_id": "7551fb9eb137",
+    "verdicts": [
+      "inconclusive",
+      "inconclusive",
+      "inconclusive"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "vulnerable",
+    "repeat": 2,
+    "run_id": "48eeafee5c12",
+    "verdicts": [
+      "vulnerable",
+      "vulnerable",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "fixed",
+    "repeat": 2,
+    "run_id": "166df8930dab",
+    "verdicts": [
+      "protected",
+      "protected",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "concealed",
+    "repeat": 2,
+    "run_id": "d8eede111675",
+    "verdicts": [
+      "protected",
+      "protected",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "broken",
+    "repeat": 2,
+    "run_id": "f524e293f8ec",
+    "verdicts": [
+      "inconclusive",
+      "inconclusive",
+      "inconclusive"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "vulnerable",
+    "repeat": 3,
+    "run_id": "97edb237c78f",
+    "verdicts": [
+      "vulnerable",
+      "vulnerable",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "fixed",
+    "repeat": 3,
+    "run_id": "cbbe83980f74",
+    "verdicts": [
+      "protected",
+      "protected",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "concealed",
+    "repeat": 3,
+    "run_id": "a6bbb0287f0e",
+    "verdicts": [
+      "protected",
+      "protected",
+      "public_allowed"
+    ],
+    "passed": true
+  },
+  {
+    "mode": "broken",
+    "repeat": 3,
+    "run_id": "6c76861d8971",
+    "verdicts": [
+      "inconclusive",
+      "inconclusive",
+      "inconclusive"
+    ],
+    "passed": true
+  }
+]

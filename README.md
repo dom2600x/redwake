@@ -17,13 +17,11 @@ python3 -m redwake evaluate --scenario discovery --repeat 3
 python3 -m unittest discover -s tests -v
 ```
 
-The demo starts and stops its own lab. It prints a run ID and report path. Evidence, Markdown reports and SQLite state live under `.redwake/`, which is ignored by Git. The vulnerable demo should prove two cross-account reads; the fixed demo should classify both as protected. Public content is a negative control.
+The demo starts and stops its own lab. It prints a run ID and report path. Generated evidence, Markdown reports and SQLite state live under `.redwake/`, which is ignored by Git. Selected experiment bundles are retained in `docs/experiments/` for readers of a fresh clone. The vulnerable demo should prove two cross-account reads; the fixed demo should classify both as protected. Public content is a negative control.
 
 The discovery scenario starts with account-specific project listings, follows nested record and attachment links, and mixes vulnerable reads, 403/404 protection, public content and an export outage. See [discovery lab details](docs/discovery-lab.md).
 
-See the captured [example report](docs/example-report.md) and [initial validation results](docs/validation.md).
-
-Experiment reports are available for the [classic lab](docs/model-comparison.md) and [discovery lab](docs/discovery-model-comparison.md).
+The [documentation index](docs/README.md) gives a reading order for guides, design decisions, the roadmap and retained experiment reports.
 
 Run a repeatable discovery comparison with the scripted baseline and all three models:
 
