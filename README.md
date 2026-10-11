@@ -1,0 +1,90 @@
+# Redwake
+
+Find weaknesses. Prove impact.
+
+Redwake is an early research prototype for evidence-backed API authorisation testing. It runs a synthetic application on an ephemeral loopback port, investigates its access rules, and produces reproducible request/response evidence. The first milestone is deliberately small: establish a trustworthy executor and a scripted baseline before measuring whether a model improves investigations.
+
+## Run it
+
+Python 3.9+ on macOS or Linux. No runtime dependencies or installation required. From this directory:
+
+```sh
+python3 -m redwake demo
+python3 -m redwake demo --mode fixed
+python3 -m redwake evaluate --repeat 3
+python3 -m unittest discover -s tests -v
+```
+
+The demo starts and stops its own lab. It prints a run ID and report path. Evidence, Markdown reports and SQLite state live under `.redwake/`, which is ignored by Git. The vulnerable demo should prove two cross-account reads; the fixed demo should classify both as protected. Public content is a negative control.
+
+See the captured [example report](docs/example-report.md) and [initial validation results](docs/validation.md).
+
+The [first live Ollama comparison](docs/model-comparison.md) records twelve successful cloud investigations across GPT-OSS 120B, Nemotron 3 Super and Nemotron 3 Ultra.
+
+```sh
+python3 -m redwake resume RUN_ID
+python3 -m redwake replay RUN_ID
+python3 -m redwake demo --max-requests 3
+```
+
+Resume retains the original configuration, evidence, pending tool calls and cumulative allowances. A fresh instance of the same deterministic lab is started; its port may change. Exhausted budgets remain exhausted. Start a new run to choose different budgets. Replay regenerates reports from SQLite without making network requests or calling a model. It is evidence replay, not a new verification against a running application.
+
+Global options go before the command:
+
+```sh
+python3 -m redwake --db /tmp/redwake.sqlite3 --reports /tmp/redwake-reports demo
+```
+
+## Ollama experiments
+
+Set `OLLAMA_API_KEY` in your environment using an Ollama API key, then run:
+
+```sh
+python3 -m redwake demo --backend ollama --model gpt-oss:120b
+python3 -m redwake demo --backend ollama --model nemotron-3-super
+```
+
+Model identifiers and account access must be confirmed with Ollama. Direct cloud requests use `https://ollama.com/api/chat`; the adapter follows the official [cloud API](https://docs.ollama.com/cloud), [chat reference](https://docs.ollama.com/api/chat) and [tool-calling contract](https://docs.ollama.com/capabilities/tool-calling). Only synthetic lab observations and the model conversation are sent. Credentials are read from the environment and are not written to run state.
+
+A running local Ollama server is also supported:
+
+```sh
+python3 -m redwake demo --backend ollama --endpoint http://127.0.0.1:11434 --model YOUR_MODEL
+```
+
+The local endpoint can use a locally installed model or a cloud model configured in Ollama. Redwake does not download models or configure your Ollama account.
+
+The default allowances are 12 lab requests, 8 model calls, 8,192 reserved output tokens and 120 seconds of recorded active time. Each model call requests at most 1,024 output tokens. Override these with `--max-requests`, `--max-model-calls`, `--max-output-tokens` and `--max-seconds`. Calls and output allowances are reserved before network execution, including calls that fail or are interrupted. Successful short responses do not refund their output reservation.
+
+These are experiment controls, **not a dollar spending cap**. Prompt tokens also cost usage, provider output limits may differ, and timed-out calls may still be billed remotely. Reports show returned token counts and flag incomplete usage; they do not invent monetary costs. Socket timeouts and between-operation time checks limit normal calls, but are not an OS-enforced wall-clock kill switch. A hard process termination can lose elapsed time since the last checkpoint.
+
+## What the results mean
+
+| Verdict | Required evidence |
+|---|---|
+| `vulnerable` | Owner and another actor both receive the expected private record |
+| `protected` | Owner receives the record; the other actor receives 403 or 404 without its marker |
+| `public_allowed` | Both actors receive a record explicitly declared public |
+| `inconclusive` | Missing controls, errors, unexpected payloads, or insufficient evidence |
+
+The model selects requests through one `probe(actor, path)` tool. The executor checks exact actor and path allowlists and uses only the current loopback lab. There is no shell tool, arbitrary URL, write operation, redirect following, or proxy inheritance. Final model prose is not accepted as a finding. The verifier uses known synthetic record markers and the declared ownership contract.
+
+The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment and a 503 outage, each with two private resources and a public resource. Repetitions measure stability of this fixture; they do not create independent vulnerability classes. A completed baseline run means its probes finished, even if an outage leaves all verdicts inconclusive. If a model finishes early, Redwake prompts it with the missing or inconclusive checks and remaining budget, then continues the investigation. Model runs become completed as soon as coverage is conclusive, without spending another model call on a closing summary. Unresolved runs stop when a budget is exhausted or an operation fails.
+
+## Implementation
+
+- `lab.py`: ephemeral HTTP application, two synthetic actors, three resources.
+- `transport.py`: bounded JSON requests and scope enforcement.
+- `runner.py`: baseline/model execution, usage reservations and evidence verification.
+- `providers.py`: Ollama adapter and tool schema.
+- `store.py`: SQLite checkpoints.
+- `report.py`: Markdown and JSON artifacts.
+- `cli.py`: demo, evaluation, resume and offline replay.
+
+The CLI takes an exclusive database lock to prevent concurrent writers from reusing allowances. An interrupted read may be retried on resume, with a new reservation; probes are read-only. The library itself is intended for a single runner per database. Stored evidence is a local research artifact, not a signed audit trail.
+
+## Current limits and next milestone
+
+This is a lab harness, not a general penetration-testing product. It does not yet support external targets, arbitrary access contracts, container isolation, mutation testing, model comparison summaries, monetary accounting or proof of model capability. The lab runs in a local Python thread with synthetic data and is not a container sandbox.
+
+Next: add less scripted cases that require resource discovery and multi-step reasoning, then compare the three models on those cases. Keep the scripted baseline in every comparison. General target support should follow only after the access contract, scope enforcement and evidence model can represent it accurately.
