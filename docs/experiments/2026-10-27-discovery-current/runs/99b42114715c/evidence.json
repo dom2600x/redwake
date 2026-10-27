@@ -1,0 +1,206 @@
+[
+  {
+    "actor": "alice",
+    "path": "/api/projects",
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "prj_a5",
+          "links": {
+            "self": "/api/projects/prj_a5"
+          }
+        }
+      ]
+    },
+    "id": 1
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects",
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "prj_b9",
+          "links": {
+            "self": "/api/projects/prj_b9"
+          }
+        }
+      ]
+    },
+    "id": 2
+  },
+  {
+    "actor": "alice",
+    "path": "/api/projects/prj_a5",
+    "status": 200,
+    "body": {
+      "id": "prj_a5",
+      "links": {
+        "records": "/api/projects/prj_a5/records"
+      }
+    },
+    "id": 3
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects/prj_b9",
+    "status": 200,
+    "body": {
+      "id": "prj_b9",
+      "links": {
+        "records": "/api/projects/prj_b9/records"
+      }
+    },
+    "id": 4
+  },
+  {
+    "actor": "alice",
+    "path": "/api/projects/prj_a5/records",
+    "status": 200,
+    "body": {
+      "records": [
+        {
+          "links": {
+            "self": "/api/records/doc_k4"
+          }
+        },
+        {
+          "links": {
+            "self": "/api/records/guide_h6"
+          }
+        }
+      ]
+    },
+    "id": 5
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects/prj_b9/records",
+    "status": 200,
+    "body": {
+      "records": [
+        {
+          "links": {
+            "self": "/api/records/inv_m8"
+          }
+        },
+        {
+          "links": {
+            "self": "/api/records/note_q2"
+          }
+        },
+        {
+          "links": {
+            "self": "/api/exports/export_z3"
+          }
+        }
+      ]
+    },
+    "id": 6
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/doc_k4",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "quarterly-draft",
+      "visibility": "private",
+      "links": {
+        "attachment": "/api/files/file_x9"
+      }
+    },
+    "id": 7
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/doc_k4",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 8
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/guide_h6",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "team-handbook",
+      "visibility": "public"
+    },
+    "id": 9
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/guide_h6",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "team-handbook",
+      "visibility": "public"
+    },
+    "id": 10
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/inv_m8",
+    "status": 200,
+    "body": {
+      "owner": "bob",
+      "data": "supplier-invoice",
+      "visibility": "private"
+    },
+    "id": 11
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/inv_m8",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 12
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/note_q2",
+    "status": 200,
+    "body": {
+      "owner": "bob",
+      "data": "planning-note",
+      "visibility": "private"
+    },
+    "id": 13
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/note_q2",
+    "status": 404,
+    "body": {
+      "error": "denied"
+    },
+    "id": 14
+  },
+  {
+    "actor": "bob",
+    "path": "/api/exports/export_z3",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 15
+  },
+  {
+    "actor": "alice",
+    "path": "/api/exports/export_z3",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 16
+  }
+]
