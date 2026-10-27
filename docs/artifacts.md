@@ -29,6 +29,10 @@ cloud proxy report is explicitly summary-only while its raw artifacts await
 import. Historical test results are documentation snapshots, not archived test
 logs, unless a bundle explicitly includes such logs.
 
+The October 27 controlled follow-up adds three complete 24-run bundles for
+current, sequential and batching profiles, bringing the retained inventory to
+135 runs. Failed operations and unknown usage remain in their original states.
+
 ## Verify from a fresh clone
 
 From the repository root, with Python 3.9+:
