@@ -31,7 +31,7 @@ python3 -m redwake.comparison --profile sequential --repeat 3
 python3 -m redwake.comparison --profile batching --repeat 3
 ```
 
-Each model and baseline runs both vulnerable and fixed discovery behaviour in each repetition. Model order rotates between blocks; inference runs serially with equal budgets. The batch retains stopped runs and writes SQLite state, individual reports and `comparison.json` under a fresh `.redwake/discovery-comparison-<timestamp>/` directory. This command makes live Ollama Cloud calls and requires the configured API key. Reports record correct findings, missed flaws, false positives, requests, returned tokens and active time. Scores grade verifier-proven findings, not model prose.
+Each model and baseline runs both vulnerable and fixed discovery behaviour in each repetition. Model order rotates between blocks; inference runs serially with equal budgets. The batch retains stopped runs and writes SQLite state, individual reports and `comparison.json` under a fresh `.redwake/discovery-comparison-<profile>-<timestamp>/` directory. This command makes live Ollama Cloud calls and requires the configured API key. Reports record correct findings, missed flaws, false positives, requests, returned tokens and active time. Scores grade verifier-proven findings, not model prose.
 
 The default `current` profile preserves the original prompt and allowances.
 `sequential` allows 24 calls with matching output reservations; `batching` adds
