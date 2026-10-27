@@ -1,0 +1,1860 @@
+{
+  "schema_version": 1,
+  "rows": [
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "12af0e943c98",
+      "backend": "baseline",
+      "model": "baseline",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 0.17934103500010679,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            9
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            12,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            13,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reserved_output_tokens": 0,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 1,
+      "missed_flaws": 1,
+      "false_positives": 0,
+      "correct_verdicts": 3,
+      "inconclusive": 4,
+      "run_id": "2695eed70845",
+      "backend": "ollama",
+      "model": "gpt-oss:120b",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "stopped",
+      "reason": "Rejected tool call outside the lab contract",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 13.457456487001764,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            5,
+            13
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            14
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            9
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            10
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            6,
+            12
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11
+          ]
+        }
+      ],
+      "requests": 14,
+      "model_calls": 15,
+      "input_tokens": 17209,
+      "output_tokens": 746,
+      "reserved_output_tokens": 15360,
+      "usage_complete": true,
+      "diagnostics": [
+        {
+          "source": "model",
+          "category": "tool_contract",
+          "model_call": 15
+        }
+      ]
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "906de9695487",
+      "backend": "ollama",
+      "model": "nemotron-3-super",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "stopped",
+      "reason": "Model-call budget exhausted",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 28.579153176000545,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            17
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            20,
+            21
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            19,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11
+          ]
+        }
+      ],
+      "requests": 24,
+      "model_calls": 24,
+      "input_tokens": 66244,
+      "output_tokens": 3560,
+      "reserved_output_tokens": 24576,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "731ba8a0da13",
+      "backend": "ollama",
+      "model": "nemotron-3-ultra",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 38.302051405000384,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            18,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 6,
+      "input_tokens": 7731,
+      "output_tokens": 1128,
+      "reserved_output_tokens": 6144,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "fb507d01da47",
+      "backend": "baseline",
+      "model": "baseline",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 0.1836464599982719,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            9
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            12,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            13,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reserved_output_tokens": 0,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "489d11e67d47",
+      "backend": "ollama",
+      "model": "nemotron-3-super",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 26.44373756099958,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            15
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            16,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            19,
+            13
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            20,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            12
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            21
+          ]
+        }
+      ],
+      "requests": 21,
+      "model_calls": 22,
+      "input_tokens": 46764,
+      "output_tokens": 3259,
+      "reserved_output_tokens": 22528,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "f8109fc57e3b",
+      "backend": "ollama",
+      "model": "nemotron-3-ultra",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 57.805808448996686,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            16,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            22
+          ]
+        }
+      ],
+      "requests": 22,
+      "model_calls": 8,
+      "input_tokens": 13380,
+      "output_tokens": 1735,
+      "reserved_output_tokens": 8192,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "b9a72238a1ef",
+      "backend": "ollama",
+      "model": "gpt-oss:120b",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 13.489207629001612,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            5,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            18,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            6,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 18,
+      "input_tokens": 24092,
+      "output_tokens": 947,
+      "reserved_output_tokens": 18432,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "218cc7572162",
+      "backend": "baseline",
+      "model": "baseline",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 0.17602042299768073,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            9
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            12,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            13,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reserved_output_tokens": 0,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "488eae9e1cee",
+      "backend": "ollama",
+      "model": "nemotron-3-super",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 17.799584562002565,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            8
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            12
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            13,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            9,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            15,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 15,
+      "input_tokens": 31705,
+      "output_tokens": 1564,
+      "reserved_output_tokens": 15360,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "a82cfa32443f",
+      "backend": "ollama",
+      "model": "nemotron-3-ultra",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 29.527225757999986,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 6,
+      "input_tokens": 7839,
+      "output_tokens": 1184,
+      "reserved_output_tokens": 6144,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "c03bf6b3f2e0",
+      "backend": "ollama",
+      "model": "gpt-oss:120b",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 11.001797344997613,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            18,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 18,
+      "input_tokens": 24897,
+      "output_tokens": 983,
+      "reserved_output_tokens": 18432,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "ebe122209e4f",
+      "backend": "baseline",
+      "model": "baseline",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 0.17997661600020365,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            9
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            12,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            13,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reserved_output_tokens": 0,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 1,
+      "inconclusive": 6,
+      "run_id": "8b81a5ee724f",
+      "backend": "ollama",
+      "model": "nemotron-3-ultra",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "stopped",
+      "reason": "Provider failure (timeout); reservations retained",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 71.67273627599934,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "inconclusive",
+          "evidence_ids": []
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "inconclusive",
+          "evidence_ids": []
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "inconclusive",
+          "evidence_ids": []
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "inconclusive",
+          "evidence_ids": []
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "inconclusive",
+          "evidence_ids": []
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": []
+        }
+      ],
+      "requests": 4,
+      "model_calls": 3,
+      "input_tokens": 1255,
+      "output_tokens": 190,
+      "reserved_output_tokens": 3072,
+      "usage_complete": false,
+      "diagnostics": [
+        {
+          "source": "provider",
+          "category": "timeout",
+          "model_call": 3
+        }
+      ]
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "e473d80f2173",
+      "backend": "ollama",
+      "model": "gpt-oss:120b",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 10.785665765000886,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            5,
+            11
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            13
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            8,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            6,
+            12
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            9,
+            16
+          ]
+        }
+      ],
+      "requests": 16,
+      "model_calls": 16,
+      "input_tokens": 19170,
+      "output_tokens": 779,
+      "reserved_output_tokens": 16384,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "ddc7460ba28a",
+      "backend": "ollama",
+      "model": "nemotron-3-super",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 19.156235993003065,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            10
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            19,
+            20
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            13,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            15,
+            16
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            11,
+            12
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        }
+      ],
+      "requests": 20,
+      "model_calls": 20,
+      "input_tokens": 38104,
+      "output_tokens": 1465,
+      "reserved_output_tokens": 20480,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "5dbc52e6f2ba",
+      "backend": "baseline",
+      "model": "baseline",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 0.18425619499976165,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            9
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            12,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            13,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reserved_output_tokens": 0,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "cfcbe7e0b26f",
+      "backend": "ollama",
+      "model": "nemotron-3-ultra",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 80.77661880599771,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            20,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            16
+          ]
+        }
+      ],
+      "requests": 20,
+      "model_calls": 11,
+      "input_tokens": 20328,
+      "output_tokens": 2615,
+      "reserved_output_tokens": 11264,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 1,
+      "missed_flaws": 1,
+      "false_positives": 0,
+      "correct_verdicts": 5,
+      "inconclusive": 2,
+      "run_id": "d303247e1292",
+      "backend": "ollama",
+      "model": "gpt-oss:120b",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "stopped",
+      "reason": "Model-call budget exhausted",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 19.600018991997786,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            17
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            16
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            23,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            22,
+            19
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            21
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            20
+          ]
+        }
+      ],
+      "requests": 23,
+      "model_calls": 24,
+      "input_tokens": 45712,
+      "output_tokens": 2824,
+      "reserved_output_tokens": 24576,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 2,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "4d9526651cde",
+      "backend": "ollama",
+      "model": "nemotron-3-super",
+      "scenario": "discovery",
+      "mode": "vulnerable",
+      "status": "stopped",
+      "reason": "Rejected tool call outside the lab contract",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 23.986796760997095,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            7,
+            8
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "vulnerable",
+          "evidence_ids": [
+            16,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            18,
+            12
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            13,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            9,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            15
+          ]
+        }
+      ],
+      "requests": 19,
+      "model_calls": 20,
+      "input_tokens": 43958,
+      "output_tokens": 2705,
+      "reserved_output_tokens": 20480,
+      "usage_complete": true,
+      "diagnostics": [
+        {
+          "source": "model",
+          "category": "tool_contract",
+          "model_call": 20
+        }
+      ]
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "ac71996b0079",
+      "backend": "baseline",
+      "model": "baseline",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 0.19585963900317438,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            9
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            11,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            12,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            10
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            13,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reserved_output_tokens": 0,
+      "usage_complete": true
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 5,
+      "inconclusive": 2,
+      "run_id": "baaf186be6a8",
+      "backend": "ollama",
+      "model": "gpt-oss:120b",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "stopped",
+      "reason": "Rejected tool call outside the lab contract",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 16.223483806999866,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            5,
+            13
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            16,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            10
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            6,
+            12
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            17
+          ]
+        }
+      ],
+      "requests": 17,
+      "model_calls": 19,
+      "input_tokens": 27981,
+      "output_tokens": 2209,
+      "reserved_output_tokens": 19456,
+      "usage_complete": true,
+      "diagnostics": [
+        {
+          "source": "model",
+          "category": "tool_contract",
+          "model_call": 19
+        }
+      ]
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "1abe9cf326c7",
+      "backend": "ollama",
+      "model": "nemotron-3-super",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "stopped",
+      "reason": "Rejected tool call outside the lab contract",
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 25.652928273000725,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            13
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            16,
+            17
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            12
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11
+          ]
+        }
+      ],
+      "requests": 17,
+      "model_calls": 18,
+      "input_tokens": 34490,
+      "output_tokens": 2211,
+      "reserved_output_tokens": 18432,
+      "usage_complete": true,
+      "diagnostics": [
+        {
+          "source": "model",
+          "category": "tool_contract",
+          "model_call": 18
+        }
+      ]
+    },
+    {
+      "correct_findings": 0,
+      "missed_flaws": 0,
+      "false_positives": 0,
+      "correct_verdicts": 6,
+      "inconclusive": 1,
+      "run_id": "b64ac92a0a22",
+      "backend": "ollama",
+      "model": "nemotron-3-ultra",
+      "scenario": "discovery",
+      "mode": "fixed",
+      "status": "completed",
+      "reason": null,
+      "limits": {
+        "requests": 32,
+        "model_calls": 24,
+        "output_tokens": 24576,
+        "seconds": 120
+      },
+      "seconds": 39.13396020199798,
+      "results": [
+        {
+          "path": "/api/records/doc_k4",
+          "verdict": "protected",
+          "evidence_ids": [
+            7,
+            12
+          ]
+        },
+        {
+          "path": "/api/files/file_x9",
+          "verdict": "protected",
+          "evidence_ids": [
+            17,
+            18
+          ]
+        },
+        {
+          "path": "/api/records/inv_m8",
+          "verdict": "protected",
+          "evidence_ids": [
+            9,
+            14
+          ]
+        },
+        {
+          "path": "/api/records/note_q2",
+          "verdict": "protected",
+          "evidence_ids": [
+            10,
+            15
+          ]
+        },
+        {
+          "path": "/api/records/guide_h6",
+          "verdict": "public_allowed",
+          "evidence_ids": [
+            8,
+            13
+          ]
+        },
+        {
+          "path": "/api/exports/export_z3",
+          "verdict": "inconclusive",
+          "evidence_ids": [
+            11,
+            16
+          ]
+        }
+      ],
+      "requests": 18,
+      "model_calls": 9,
+      "input_tokens": 14308,
+      "output_tokens": 1090,
+      "reserved_output_tokens": 9216,
+      "usage_complete": true
+    }
+  ]
+}
