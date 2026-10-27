@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from .providers import validate_diagnostic
 from .verifier import assess, score
 
 
@@ -7,6 +8,7 @@ def write_report(state, directory):
     directory = Path(directory) / state["id"]
     directory.mkdir(parents=True, exist_ok=True)
     scenario = state["config"].get("scenario", "classic")
+    diagnostics = [validate_diagnostic(record) for record in state.get("diagnostics", [])]
     results = assess(state["evidence"], scenario)
     metrics = dict(score(state["evidence"], state["config"]["mode"], scenario),
                    requests=state["requests"], model_calls=state["model_calls"],
@@ -40,9 +42,23 @@ def write_report(state, directory):
                "The adjacent evidence.json contains the captured responses; replay performs no network requests.", ""]
     for e in state["evidence"]:
         report += ["### Evidence %d" % e["id"], "", "```json", json.dumps(e, indent=2), "```", ""]
+    if diagnostics:
+        section = ["## Diagnostics", "",
+                   "Fixed categories identify the observed failure boundary; raw provider errors, "
+                   "exception text, headers and credentials are not recorded.", "",
+                   "| Source | Category | Model call | HTTP status |", "|---|---|---:|---:|"]
+        for record in diagnostics:
+            section.append("| %s | %s | %s | %s |" % (
+                record["source"], record["category"], record.get("model_call", "—"),
+                record.get("http_status", "—")))
+        section.append("")
+        position = report.index("## Interpretation")
+        report[position:position] = section
     (directory / "report.md").write_text("\n".join(report))
     (directory / "evidence.json").write_text(json.dumps(state["evidence"], indent=2) + "\n")
-    (directory / "result.json").write_text(json.dumps({"run_id": state["id"], "results": results,
-                                                      "status": state["status"], "scenario": scenario,
-                                                      "metrics": metrics}, indent=2) + "\n")
+    result = {"run_id": state["id"], "results": results, "status": state["status"],
+              "scenario": scenario, "metrics": metrics}
+    if diagnostics:
+        result["diagnostics"] = diagnostics
+    (directory / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     return directory / "report.md"

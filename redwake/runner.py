@@ -6,7 +6,7 @@ from .lab import ACTORS, allowed_paths
 from .contracts import RESOURCES
 from .verifier import assess, missing_checks, score, discovery_coverage
 from .guidance import response_links
-from .providers import initial_messages
+from .providers import ProviderError, initial_messages, provider_failure, validate_diagnostic
 from .transport import probe
 
 
@@ -56,13 +56,20 @@ def investigate(store, state, origin, provider=None):
         save()
         return state
 
+    def diagnose(source, category, **details):
+        record = dict(source=source, category=category, **details)
+        if source in ("provider", "model") and state["model_calls"] > 0:
+            record["model_call"] = state["model_calls"]
+        state.setdefault("diagnostics", []).append(validate_diagnostic(record))
+
     state["status"] = "running"
     state.pop("reason", None)
     if state.pop("inflight_model", False):
         state["usage_complete"] = False
+        diagnose("provider", "interrupted")
         state["events"].append("Interrupted model call: reservation retained; actual usage unknown.")
     if not state["messages"]:
-        state["messages"] = initial_messages(scenario)
+        state["messages"] = initial_messages(scenario, state["config"].get("prompt_variant", "original"))
     save()
     try:
         while True:
@@ -103,6 +110,11 @@ def investigate(store, state, origin, provider=None):
                     state["inflight_model"] = True
                     save()
                     response = provider.chat(state["messages"], output_limit, min(60, remaining()))
+                    if isinstance(response, dict) and ("error" in response or
+                            (isinstance(response.get("message"), dict) and "error" in response["message"])):
+                        raise ProviderError("inference_error")
+                    if not isinstance(response, dict) or not isinstance(response.get("message"), dict):
+                        raise ProviderError("response_protocol")
                     state["inflight_model"] = False
                     for key, field in (("prompt_eval_count", "input_tokens"), ("eval_count", "output_tokens")):
                         count = response.get(key)
@@ -112,16 +124,18 @@ def investigate(store, state, origin, provider=None):
                             state["usage_complete"] = False
                     message = response["message"]
                     if message.get("role") != "assistant":
-                        raise ValueError("Provider returned a non-assistant message")
+                        raise ProviderError("response_protocol")
                     state["messages"].append(message)
                     calls = message.get("tool_calls") or []
                     if not isinstance(calls, list) or len(calls) > 12:
-                        raise ValueError("Invalid or excessive tool-call batch")
+                        diagnose("model", "tool_batch")
+                        return stop("Rejected invalid or excessive tool-call batch")
                     # The execution queue must not alias the transcript: popping a
                     # completed call must preserve the assistant's tool_calls.
                     state["pending"] = list(calls)
                     save()
                     if state["output_tokens"] > limits["output_tokens"]:
+                        diagnose("provider", "output_budget")
                         return stop("Provider exceeded the requested output-token budget")
                     if not calls:
                         if scenario == "discovery":
@@ -154,11 +168,15 @@ def investigate(store, state, origin, provider=None):
                 return stop("Request budget exhausted")
             call = state["pending"][0]
             function = call.get("function", {}) if isinstance(call, dict) else {}
+            if not isinstance(function, dict):
+                diagnose("model", "tool_contract")
+                return stop("Rejected tool call outside the lab contract")
             args = function.get("arguments", {})
             if (function.get("name") != "probe" or not isinstance(args, dict)
                     or set(args) != {"actor", "path"}
                     or not isinstance(args["actor"], str) or not isinstance(args["path"], str)
                     or args["actor"] not in ACTORS or args["path"] not in allowed_paths(scenario)):
+                diagnose("model", "tool_contract")
                 return stop("Rejected tool call outside the lab contract")
             # Reserve first; a crash can consume allowance but cannot create free retries.
             state["requests"] += 1
@@ -172,9 +190,17 @@ def investigate(store, state, origin, provider=None):
                 state["messages"].append({"role": "tool", "tool_name": "probe", "content": json.dumps(evidence)})
             save()
     except KeyboardInterrupt:
-        return stop("Interrupted; saved progress can be resumed")
-    except Exception as exc:
         if state.pop("inflight_model", False):
             state["usage_complete"] = False
-        # Exception text from network libraries may contain provider data.
-        return stop("Operation failed (%s); reservations retained" % type(exc).__name__)
+            diagnose("provider", "interrupted")
+        return stop("Interrupted; saved progress can be resumed")
+    except Exception as exc:
+        inflight = state.pop("inflight_model", False)
+        if inflight:
+            state["usage_complete"] = False
+        if inflight or isinstance(exc, ProviderError):
+            failure = provider_failure(exc).diagnostic
+            diagnose(**failure)
+            return stop("Provider failure (%s); reservations retained" % failure["category"])
+        diagnose("harness", "unknown")
+        return stop("Operation failed; reservations retained")

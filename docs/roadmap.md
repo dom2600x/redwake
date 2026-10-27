@@ -17,20 +17,24 @@ to those reports and their retained evidence.
 - A repeatable comparison of the scripted baseline, GPT-OSS, Super and Ultra,
   recording findings, misses, false positives, requests, tokens and active time.
   See the [live discovery comparison](experiments/2026-10-11-discovery/report.md).
+- Fixed current, sequential-capacity and batching-guidance profiles, safe provider
+  diagnostics, and complete comparison export. The [controlled follow-up](experiments/2026-10-27-discovery-followup.md)
+  retains all 72 new runs, including baselines, scope rejections and inference failures.
 
 ## Next experiments
 
-1. Repeat the comparison with enough model calls for sequential discovery. Keep
-   the current-budget batch as a separate result so changes remain comparable.
-2. Test explicit batching guidance in a separate experiment, keeping prompts and
-   allowances fixed within each batch. Retain the scripted baseline and failed
-   runs in every comparison.
-3. Improve sanitized provider-error diagnostics to distinguish inference failures
-   from model choices without persisting credentials or arbitrary provider errors.
+1. Investigate provider/tool-batching compatibility in a separate experiment.
+   Vary response capacity as its own factor; preserve the HTTP 500 failures and
+   fixed-control results from the completed follow-up.
+2. Rotate profile order across repeated blocks and add navigation layouts or
+   fixture IDs before drawing broader conclusions about model capability.
+3. Test any change to scope-rejection behaviour as a separate treatment. Inferred
+   valid paths can shorten traversal; rejected paths currently stop a run.
 
-These experiments should separate resource discovery, evidence collection and
-budget management before drawing broader conclusions about model capability.
-Detailed observations and experiment limitations remain in the comparison report.
+Continue separating resource discovery, evidence collection, budget management
+and operational failures. Keep prompts and allowances fixed within each batch,
+with baselines and failed runs in every comparison. Detailed observations and
+limitations remain in the dated comparison reports.
 
 ## External targets
 

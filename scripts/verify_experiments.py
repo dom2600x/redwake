@@ -1,6 +1,7 @@
 """Check retained experiment files and reclassify saved evidence offline."""
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -9,6 +10,38 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from redwake.verifier import assess, score
+
+
+def verify_comparison_controls(batch, states):
+    """Recheck v2 treatment equality without rewriting historical batch rules."""
+    if batch.get("comparison_version") != 2:
+        return
+    from redwake.comparison import json_sha256
+    from redwake.providers import validate_diagnostic
+    shared = ("comparison_version", "experiment_profile", "prompt_variant",
+              "initial_messages", "initial_messages_sha256", "tools_sha256",
+              "controls", "limits", "endpoint", "scenario")
+    if (batch["initial_messages_sha256"] != json_sha256(batch["initial_messages"])
+            or type(batch["repeat"]) is not int or batch["repeat"] <= 0):
+        raise ValueError("Invalid comparison prompt or repetition count")
+    expected = Counter((repeat, mode, model) for repeat in range(1, batch["repeat"] + 1)
+                       for mode in batch["modes"] for model in ["baseline"] + batch["models"])
+    actual = Counter((row["repeat"], row["mode"], row["model"]) for row in batch["rows"])
+    if actual != expected or len(batch["rows"]) != len(states):
+        raise ValueError("Comparison plan differs from retained runs")
+    for row in batch["rows"]:
+        state = states[row["run_id"]]
+        if any(state["config"].get(key) != batch[key] for key in shared):
+            raise ValueError("Run controls differ from comparison")
+        if state["messages"]:
+            if state["messages"][:len(batch["initial_messages"])] != batch["initial_messages"]:
+                raise ValueError("Executed prompt differs from comparison")
+        elif state["model_calls"] or state["requests"] or state["status"] != "stopped":
+            raise ValueError("Executed run lacks its initial prompt")
+        for diagnostic in state.get("diagnostics", []):
+            validate_diagnostic(diagnostic)
+            if diagnostic.get("model_call", 0) > state["model_calls"]:
+                raise ValueError("Diagnostic call exceeds reserved calls")
 
 
 def verify_bundle(directory):
@@ -67,6 +100,9 @@ def verify_bundle(directory):
                 or row["model"] != state["config"].get("model")
                 or row["mode"] != state["config"]["mode"] or row["scenario"] != scenario):
             raise ValueError("Configuration mismatch: " + run_id)
+        if (row.get("diagnostics", []) != state.get("diagnostics", [])
+                or saved_result.get("diagnostics", []) != state.get("diagnostics", [])):
+            raise ValueError("Diagnostic mismatch: " + run_id)
         by_id[run_id] = state
     evaluation = directory / "baseline-evaluation.json"
     if evaluation.exists():
@@ -84,6 +120,7 @@ def verify_bundle(directory):
         for row in batch["rows"]:
             if row != result_row(by_id[row["run_id"]], row["repeat"]):
                 raise ValueError("Comparison row mismatch")
+        verify_comparison_controls(batch, by_id)
     return {"bundle": directory.name, "runs": len(ids), "files": len(expected_files)}
 
 
