@@ -1,8 +1,10 @@
 # Controlled discovery comparisons
 
 The scripted traversal takes 18 requests: six navigation requests and twelve
-record probes. A model issuing one probe per call cannot finish within the
-original 16-call allowance. Separate profiles test capacity and batching advice.
+record probes. A model using one probe per call cannot reproduce that traversal
+within the original 16-call allowance. This is not a minimum enforced by the
+executor: a model can infer an accepted path and skip navigation steps. Separate
+profiles test capacity and batching advice.
 
 | Profile | Guidance | Requests | Model calls | Reserved output tokens | Active seconds |
 |---|---|---:|---:|---:|---:|
