@@ -20,12 +20,15 @@ to those reports and their retained evidence.
 - Fixed current, sequential-capacity and batching-guidance profiles, safe provider
   diagnostics, and complete comparison export. The [controlled follow-up](experiments/2026-10-27-discovery-followup.md)
   retains all 72 new runs, including baselines, scope rejections and inference failures.
+- An [inference-only compatibility study](experiments/2026-10-27-provider-compatibility/report.md)
+  pairs fresh prompts and saved failure contexts at two response capacities,
+  retaining all 36 live calls and 36 scripted controls.
 
 ## Next experiments
 
-1. Investigate provider/tool-batching compatibility in a separate experiment.
-   Vary response capacity as its own factor; preserve the HTTP 500 failures and
-   fixed-control results from the completed follow-up.
+1. Minimise the reproducing GPT-OSS failure context with declared transcript and
+   tool-result-correlation variants. Raising response capacity did not resolve
+   that context's HTTP 500; keep the compatibility study and historical failures.
 2. Rotate profile order across repeated blocks and add navigation layouts or
    fixture IDs before drawing broader conclusions about model capability.
 3. Test any change to scope-rejection behaviour as a separate treatment. Inferred

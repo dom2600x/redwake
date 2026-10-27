@@ -33,6 +33,12 @@ The October 27 controlled follow-up adds three complete 24-run bundles for
 current, sequential and batching profiles, bringing the retained inventory to
 135 runs. Failed operations and unknown usage remain in their original states.
 
+The provider compatibility study adds 72 inference-only trials: 36 live calls
+and 36 scripted controls, with no lab probes or security verdicts. Its schema-2
+manifest covers the complete input/result snapshot and reviewed report; the
+offline verifier rechecks the paired plan and proposal classifications separately
+from discovery-run evidence. Counts printed as runs/trials include both types.
+
 ## Verify from a fresh clone
 
 From the repository root, with Python 3.9+:

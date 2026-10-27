@@ -1,0 +1,8 @@
+{
+  "schema_version": 2,
+  "kind": "provider_compatibility",
+  "sha256": {
+    "compatibility.json": "4b1e1c221acbc97047903544c5ae576e6df8f77d1bd22cd7d294eb19c41ac6ce",
+    "report.md": "7e86ed7763c16f32925bbbcc2fd03360408facef98c9219c17ad590456c7fdfe"
+  }
+}
