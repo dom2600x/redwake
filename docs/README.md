@@ -14,6 +14,8 @@ Generated runtime state stays in the ignored `.redwake/` directory. Published
 experiment bundles under `docs/experiments/` contain the evidence retained with
 the repository, so reading them does not require the original local database.
 
+See also the [comparison method](comparison-method.md) for fixed profiles and diagnostics.
+
 ## Design and roadmap
 
 - [Roadmap](roadmap.md): the canonical next steps and their dependencies.

@@ -68,7 +68,25 @@ headers. Retain original report bytes and state while publishing rechecked score
 separately. Record unavailable provenance fields explicitly. Keep operational
 SQLite files local; published bundles use reviewable JSON and Markdown.
 
-The current repository has an offline bundle verifier, not an archive-import CLI.
+## Export a completed comparison
+
+Write the dated observations and limitations in a Markdown report, then export
+the entire completed comparison into a fresh retained directory:
+
+```sh
+python3 scripts/export_experiment.py .redwake/sequential \
+  docs/experiments/DATE-sequential --report /tmp/sequential-report.md
+python3 scripts/verify_experiments.py docs/experiments/DATE-sequential
+```
+
+The exporter checks all planned slots, including baselines and stopped runs,
+against a read-only database. It preserves original states and artifacts,
+adds offline scores and hashes, and refuses overwriting a bundle or exporting an
+active/incomplete comparison. Review the report and synthetic conversations for
+publication; structured validation does not sanitize arbitrary free-form text.
+New bundles also recheck prompt and allowance equality against the batch plan.
+
+The repository has a bundle verifier and comparison exporter, but no archive-import CLI.
 The supplied Mac archive was imported through the above workflow and then exported
 to its retained bundle. Rerunning a live comparison makes a new experiment with
 new conversations, usage and timing; it cannot reconstruct a historical run.
