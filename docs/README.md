@@ -32,6 +32,7 @@ tool-call prompts and saved failure contexts from live investigation.
 | 2026-10-11 cloud proxy validation | [Validation summary](experiments/2026-10-11-cloud-proxy/report.md) | Summary only; the original raw run is unavailable in the uploaded Mac archive and current workspace |
 | 2026-10-11 discovery comparison | [Comparison report](experiments/2026-10-11-discovery/report.md) | All 24 comparison runs; [manifest](experiments/2026-10-11-discovery/manifest.json) and [comparison data](experiments/2026-10-11-discovery/comparison.json) |
 | 2026-10-27 controlled discovery follow-up | [Combined comparison](experiments/2026-10-27-discovery-followup.md) | All 72 runs across separate [current](experiments/2026-10-27-discovery-current/report.md), [sequential](experiments/2026-10-27-discovery-sequential/report.md) and [batching](experiments/2026-10-27-discovery-batching/report.md) bundles |
+| 2026-10-27 provider compatibility | [Compatibility report](experiments/2026-10-27-provider-compatibility/report.md) | All 36 live calls and 36 scripted controls; [inputs and results](experiments/2026-10-27-provider-compatibility/compatibility.json) and [manifest](experiments/2026-10-27-provider-compatibility/manifest.json) |
 
 These are historical reports, not instructions to rerun an experiment. A new run
 produces a new result and should retain its own provenance. Use the roadmap for

@@ -1,11 +1,12 @@
 import copy
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from redwake.compatibility import inputs, plan, trial, verify_data, main
+from redwake.compatibility import inputs, plan, trial, verify_data, verify_bundle, main
 from redwake.comparison import json_sha256
 from redwake.providers import ProviderError, TOOLS
 
@@ -96,3 +97,23 @@ class CompatibilityTests(unittest.TestCase):
             self.assertEqual(last['status'], 'reserved')
             self.assertEqual(last['output_reserved'], last['capacity'])
             with self.assertRaises(FileExistsError): main(['--directory', str(destination)])
+
+    def test_bundle_hashes_and_semantics_are_checked_independently(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data = self.data()
+            (root / 'compatibility.json').write_text(json.dumps(data))
+            (root / 'report.md').write_text('Compatibility trials, no probes executed.')
+            def rehash():
+                manifest = dict(schema_version=2, kind='provider_compatibility', sha256={
+                    name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+                    for name in ('compatibility.json', 'report.md')})
+                (root / 'manifest.json').write_text(json.dumps(manifest))
+            rehash()
+            self.assertEqual(verify_bundle(root)['runs'], 24)
+            (root / 'report.md').write_text('Changed after publication')
+            with self.assertRaisesRegex(ValueError, 'hash mismatch'): verify_bundle(root)
+            data['rows'][1]['output_reserved'] = 0
+            (root / 'compatibility.json').write_text(json.dumps(data))
+            rehash()
+            with self.assertRaisesRegex(ValueError, 'Reservation'): verify_bundle(root)
