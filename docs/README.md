@@ -16,6 +16,9 @@ the repository, so reading them does not require the original local database.
 
 See also the [comparison method](comparison-method.md) for fixed profiles and diagnostics.
 
+The [provider compatibility experiment](provider-compatibility.md) isolates fresh
+tool-call prompts and saved failure contexts from live investigation.
+
 ## Design and roadmap
 
 - [Roadmap](roadmap.md): the canonical next steps and their dependencies.

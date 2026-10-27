@@ -47,6 +47,9 @@ def verify_comparison_controls(batch, states):
 def verify_bundle(directory):
     directory = Path(directory)
     manifest = json.loads((directory / "manifest.json").read_text())
+    if manifest.get('schema_version') == 2 and manifest.get('kind') == 'provider_compatibility':
+        from redwake.compatibility import verify_bundle as verify_compatibility
+        return verify_compatibility(directory)
     if manifest.get("schema_version") != 1:
         raise ValueError("Unsupported manifest schema")
     expected_files = set()
@@ -138,7 +141,7 @@ def main(argv=None):
         return 1
     for row in totals:
         print("%(bundle)s: %(runs)d runs, %(files)d files verified offline." % row)
-    print("%d saved runs verified; no network or model calls." % sum(r["runs"] for r in totals))
+    print("%d saved runs/trials verified; no network or model calls." % sum(r["runs"] for r in totals))
     return 0
 
 
