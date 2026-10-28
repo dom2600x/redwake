@@ -26,6 +26,8 @@ behavioural cases. Their link-following baseline takes 18 probes in vulnerable
 and fixed mode. The opaque links prevent the original `/projects/ID/records`
 shortcut from being an accepted path. This tests link use together with the
 existing scope policy, not a new authorisation vulnerability class.
+The graph depth and hop count stay the same; this layout variant changes only
+collection-URL shape, not the underlying navigation topology.
 
 Models receive the same public API guidance across fixtures, without record IDs
 or private verifier expectations. The executor uses a fixture-specific exact
