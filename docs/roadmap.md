@@ -23,14 +23,18 @@ to those reports and their retained evidence.
 - An [inference-only compatibility study](experiments/2026-10-27-provider-compatibility/report.md)
   pairs fresh prompts and saved failure contexts at two response capacities,
   retaining all 36 live calls and 36 scripted controls.
+- A [declared transcript-reduction study](experiments/2026-10-28-transcript-reduction/report.md)
+  retains 48 calls and 48 controls across adapter/native request construction.
+  The original control no longer reproduced HTTP 500 in that sample; no field
+  removal or correlation workaround is credited with fixing it.
 
 ## Next experiments
 
-1. Minimise the reproducing GPT-OSS failure context with declared transcript and
-   tool-result-correlation variants. Raising response capacity did not resolve
-   that context's HTTP 500; keep the compatibility study and historical failures.
-2. Rotate profile order across repeated blocks and add navigation layouts or
+1. Rotate profile order across repeated blocks and add navigation layouts or
    fixture IDs before drawing broader conclusions about model capability.
+2. Re-establish a failing original provider control before further minimisation.
+   Prefer a stable provider version or safe trace identifier when available;
+   preserve both the historical failures and later non-reproduction.
 3. Test any change to scope-rejection behaviour as a separate treatment. Inferred
    valid paths can shorten traversal; rejected paths currently stop a run.
 

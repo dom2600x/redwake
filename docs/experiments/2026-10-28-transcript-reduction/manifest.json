@@ -1,0 +1,8 @@
+{
+  "schema_version": 2,
+  "kind": "transcript_reduction",
+  "sha256": {
+    "transcript.json": "34057a7874aee0991db49eb5dad4ff3a81c50032b51182ad8ebabe49b9f8613d",
+    "report.md": "246e0339506a11a0fc2c50c59dd84bac70356d02bfbc01ddaabbc66c4d9f2349"
+  }
+}

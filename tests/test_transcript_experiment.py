@@ -72,6 +72,21 @@ class TranscriptTests(unittest.TestCase):
         self.assertNotEqual(slots[0]['variant'], slots[32]['variant'])
         self.assertEqual({s['capacity'] for s in slots}, {1024})
 
+    def test_native_errors_never_persist_response_bodies(self):
+        case = inputs()['original']
+        slot = dict(model=MODEL, variant='original', route='native', case='replay',
+                    backend='ollama', capacity=1024)
+        for status in (200, 500):
+            with patch.dict('os.environ', {'OLLAMA_API_KEY': 'synthetic-test-key'}), patch(
+                    'redwake.transcript_experiment.request_json',
+                    return_value=(status, {'error': 'PRIVATE-PROVIDER-BODY'})):
+                row = trial(slot, case, NativeOllama(MODEL))
+            self.assertEqual(row['result'], 'provider_failure')
+            self.assertEqual(row['output_reserved'], 1024)
+            self.assertFalse(row['usage_complete'])
+            self.assertNotIn('PRIVATE-PROVIDER-BODY', json.dumps(row))
+            self.assertNotIn('synthetic-test-key', json.dumps(row))
+
     def test_offline_rechecks_plan_input_and_results(self):
         cases = inputs()
         data = dict(schema_version=1, kind='transcript_reduction', repeat=1,

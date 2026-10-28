@@ -8,6 +8,8 @@ This is a separate inference-only experiment: 48 GPT-OSS calls and 48 scripted
 controls, with no lab probes or vulnerability verdicts. All cells use temperature
 zero, 1,024 output tokens, one call per trial, a 60-second timeout and no retries.
 Variant order rotates by repetition and route order alternates within blocks.
+The first route for each particular variant stays constant across repetitions;
+this ordering is not a fully counterbalanced comparison of the two routes.
 
 The fixed source is the exact conversation before historical GPT-OSS HTTP 500
 run `65224d9d368f`. It contains two initial messages and four assistant/tool pairs.
