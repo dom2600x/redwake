@@ -1,0 +1,74 @@
+{
+  "run_id": "b6826d5c68ed",
+  "results": [
+    {
+      "path": "/api/records/doc_k4",
+      "verdict": "vulnerable",
+      "evidence_ids": [
+        9,
+        15
+      ]
+    },
+    {
+      "path": "/api/files/file_x9",
+      "verdict": "vulnerable",
+      "evidence_ids": [
+        20,
+        19
+      ]
+    },
+    {
+      "path": "/api/records/inv_m8",
+      "verdict": "protected",
+      "evidence_ids": [
+        18,
+        16
+      ]
+    },
+    {
+      "path": "/api/records/note_q2",
+      "verdict": "protected",
+      "evidence_ids": [
+        12,
+        17
+      ]
+    },
+    {
+      "path": "/api/records/guide_h6",
+      "verdict": "public_allowed",
+      "evidence_ids": [
+        10,
+        14
+      ]
+    },
+    {
+      "path": "/api/exports/export_z3",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        13
+      ]
+    }
+  ],
+  "status": "stopped",
+  "scenario": "discovery_deep",
+  "metrics": {
+    "correct_findings": 2,
+    "missed_flaws": 0,
+    "false_positives": 0,
+    "correct_verdicts": 6,
+    "inconclusive": 1,
+    "requests": 20,
+    "model_calls": 21,
+    "input_tokens": 32654,
+    "output_tokens": 1180,
+    "seconds": 12.48915973000112,
+    "usage_complete": true
+  },
+  "diagnostics": [
+    {
+      "source": "model",
+      "category": "tool_contract",
+      "model_call": 21
+    }
+  ]
+}

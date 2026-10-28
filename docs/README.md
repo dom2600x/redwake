@@ -22,6 +22,8 @@ The [transcript experiment](transcript-experiment.md) tests declared reductions
 and tool-result correlation with a direct native API cross-check.
 The [varied discovery suite](varied-discovery.md) rotates profiles across ID and
 navigation variants while retaining the same access cases and allowances.
+The [counterbalanced topology suite](topology-suite.md) adds deeper and branching
+graphs with graph-aware guidance and repeated within-condition order balance.
 
 ## Design and roadmap
 
@@ -39,6 +41,7 @@ navigation variants while retaining the same access cases and allowances.
 | 2026-10-27 provider compatibility | [Compatibility report](experiments/2026-10-27-provider-compatibility/report.md) | All 36 live calls and 36 scripted controls; [inputs and results](experiments/2026-10-27-provider-compatibility/compatibility.json) and [manifest](experiments/2026-10-27-provider-compatibility/manifest.json) |
 | 2026-10-28 transcript reduction | [Reduction report](experiments/2026-10-28-transcript-reduction/report.md) | All 48 calls and 48 scripted controls; [inputs and results](experiments/2026-10-28-transcript-reduction/transcript.json) and [manifest](experiments/2026-10-28-transcript-reduction/manifest.json) |
 | 2026-10-28 varied discovery pilot | [Pilot report](experiments/2026-10-28-varied-discovery/report.md) | All 72 runs across original, renamed-ID and opaque-collection fixtures; [comparison plan](experiments/2026-10-28-varied-discovery/comparison.json) and [manifest](experiments/2026-10-28-varied-discovery/manifest.json) |
+| 2026-10-28 counterbalanced topology study | [Study report](experiments/2026-10-28-topology-study/report.md) | All 216 investigations with three repetitions across opaque-reference, deeper and branching graphs; [comparison plan](experiments/2026-10-28-topology-study/comparison.json) and [manifest](experiments/2026-10-28-topology-study/manifest.json) |
 
 These are historical reports, not instructions to rerun an experiment. A new run
 produces a new result and should retain its own provenance. Use the roadmap for

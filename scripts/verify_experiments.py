@@ -120,11 +120,11 @@ def verify_bundle(directory):
     comparison = directory / "comparison.json"
     if comparison.exists():
         batch = json.loads(comparison.read_text())
-        if 'suite_version' in batch and batch['suite_version'] != 1:
+        if 'suite_version' in batch and batch['suite_version'] not in (1, 2):
             raise ValueError('Unsupported discovery suite version')
         if [r['run_id'] for r in batch['rows']] != ids:
             raise ValueError('Comparison run inventory mismatch')
-        if batch.get('suite_version') == 1:
+        if batch.get('suite_version') in (1, 2):
             from redwake.discovery_suite import verify_comparison
             verify_comparison(batch, by_id)
         else:

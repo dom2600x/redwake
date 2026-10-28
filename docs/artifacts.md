@@ -50,6 +50,12 @@ original state/evidence/report bundle format with a versioned suite plan. The
 exporter and offline verifier score each state against its recorded fixture and
 check the complete ordered matrix, per-profile controls and fixture-specific summaries.
 
+The counterbalanced topology study adds 216 investigations, bringing the total
+to 591 saved runs/trials. Its version-two plan checks explicit graph guidance,
+all three repetitions, per-condition profile/model positions and the entire
+ordered matrix. All 54 baselines and 162 live runs, including failures and
+unknown usage, remain in the verified inventory.
+
 ## Verify from a fresh clone
 
 From the repository root, with Python 3.9+:

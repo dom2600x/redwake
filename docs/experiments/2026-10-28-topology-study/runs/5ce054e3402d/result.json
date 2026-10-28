@@ -1,0 +1,65 @@
+{
+  "run_id": "5ce054e3402d",
+  "results": [
+    {
+      "path": "/api/records/doc_k4",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        9
+      ]
+    },
+    {
+      "path": "/api/files/file_x9",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/records/inv_m8",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        11
+      ]
+    },
+    {
+      "path": "/api/records/note_q2",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        12
+      ]
+    },
+    {
+      "path": "/api/records/guide_h6",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        10
+      ]
+    },
+    {
+      "path": "/api/exports/export_z3",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    }
+  ],
+  "status": "stopped",
+  "scenario": "discovery_deep",
+  "metrics": {
+    "correct_findings": 0,
+    "missed_flaws": 2,
+    "false_positives": 0,
+    "correct_verdicts": 1,
+    "inconclusive": 6,
+    "requests": 12,
+    "model_calls": 13,
+    "input_tokens": 14136,
+    "output_tokens": 677,
+    "seconds": 7.117234803999963,
+    "usage_complete": true
+  },
+  "diagnostics": [
+    {
+      "source": "model",
+      "category": "tool_contract",
+      "model_call": 13
+    }
+  ]
+}

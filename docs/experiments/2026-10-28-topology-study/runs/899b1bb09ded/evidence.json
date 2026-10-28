@@ -1,0 +1,57 @@
+[
+  {
+    "actor": "alice",
+    "path": "/api/projects",
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "prj_a5",
+          "links": {
+            "self": "/api/projects/prj_a5"
+          }
+        }
+      ]
+    },
+    "id": 1
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects",
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "prj_b9",
+          "links": {
+            "self": "/api/projects/prj_b9"
+          }
+        }
+      ]
+    },
+    "id": 2
+  },
+  {
+    "actor": "alice",
+    "path": "/api/projects/prj_a5",
+    "status": 200,
+    "body": {
+      "id": "prj_a5",
+      "links": {
+        "navigation": "/api/navigation/nav_a1"
+      }
+    },
+    "id": 3
+  },
+  {
+    "actor": "alice",
+    "path": "/api/navigation/nav_a1",
+    "status": 200,
+    "body": {
+      "links": {
+        "records": "/api/collections/set_l6"
+      }
+    },
+    "id": 4
+  }
+]

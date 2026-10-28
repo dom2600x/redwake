@@ -1,7 +1,8 @@
 """Public API documentation, independent of verifier fixtures."""
 
 ACTOR_NAMES = ("alice", "bob")
-DISCOVERY_SCENARIOS = ("discovery", "discovery_ids", "discovery_links")
+DISCOVERY_SCENARIOS = ("discovery", "discovery_ids", "discovery_links",
+                       "discovery_deep", "discovery_branch")
 
 
 def discovery_scenario(scenario):
@@ -17,6 +18,17 @@ or public). Compare a known owner's response with the other account's response;
 check actual content, and distinguish public sharing and service errors from an
 unauthorised read. Only GET requests are supported. Start discovery with both
 accounts before testing discovered records across accounts."""
+
+GRAPH_GUIDANCE = """Two test accounts, alice and bob, are available through probe(actor, path).
+GET /api/projects lists the current account's projects. Project responses link to
+further navigation nodes or record collections. Follow returned relative API links;
+a project can have intermediate nodes or multiple collections. Collections link
+to record details; details may link to files or exports. Listings are account-specific.
+Record representations expose an owner and visibility (private or public).
+Compare a known owner's response with the other account's response; check actual
+content, and distinguish public sharing and service errors from an unauthorised
+read. Only GET requests are supported. Start discovery with both accounts before
+testing discovered records across accounts."""
 
 
 def response_links(body):

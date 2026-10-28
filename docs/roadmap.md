@@ -31,15 +31,19 @@ to those reports and their retained evidence.
   retains 72 runs with rotating profile order, renamed IDs and opaque collection
   URLs. Access semantics and scripted traversal length stay fixed.
 
+- A [counterbalanced topology study](experiments/2026-10-28-topology-study/report.md)
+  retains all 216 investigations across opaque-reference, deeper and branching
+  graphs, with three repetitions and balanced profile/model positions within
+  each condition. All fixtures share explicit graph guidance; the reference
+  costs 18 scripted probes and the deeper/branching variants cost 20. These
+  remain related deterministic cases, rather than independent vulnerability classes.
+
 ## Next experiments
 
-1. Repeat the varied suite with within-condition order counterbalancing and more
-   independent navigation topologies before broader capability claims. The pilot
-   has one run per model/profile/fixture/mode; URL shape is not graph topology.
-2. Re-establish a failing original provider control before further minimisation.
+1. Re-establish a failing original provider control before further minimisation.
    Prefer a stable provider version or safe trace identifier when available;
    preserve both the historical failures and later non-reproduction.
-3. Test any change to scope-rejection behaviour as a separate treatment. Inferred
+2. Test any change to scope-rejection behaviour as a separate treatment. Inferred
    valid paths can shorten traversal; rejected paths currently stop a run.
 
 Continue separating resource discovery, evidence collection, budget management

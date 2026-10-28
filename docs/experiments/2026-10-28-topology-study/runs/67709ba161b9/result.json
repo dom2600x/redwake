@@ -1,0 +1,68 @@
+{
+  "run_id": "67709ba161b9",
+  "results": [
+    {
+      "path": "/api/records/doc_k4",
+      "verdict": "protected",
+      "evidence_ids": [
+        9,
+        13
+      ]
+    },
+    {
+      "path": "/api/files/file_x9",
+      "verdict": "protected",
+      "evidence_ids": [
+        17,
+        18
+      ]
+    },
+    {
+      "path": "/api/records/inv_m8",
+      "verdict": "protected",
+      "evidence_ids": [
+        11,
+        15
+      ]
+    },
+    {
+      "path": "/api/records/note_q2",
+      "verdict": "protected",
+      "evidence_ids": [
+        12,
+        16
+      ]
+    },
+    {
+      "path": "/api/records/guide_h6",
+      "verdict": "public_allowed",
+      "evidence_ids": [
+        10,
+        14
+      ]
+    },
+    {
+      "path": "/api/exports/export_z3",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        19,
+        20
+      ]
+    }
+  ],
+  "status": "completed",
+  "scenario": "discovery_branch",
+  "metrics": {
+    "correct_findings": 0,
+    "missed_flaws": 0,
+    "false_positives": 0,
+    "correct_verdicts": 6,
+    "inconclusive": 1,
+    "requests": 20,
+    "model_calls": 6,
+    "input_tokens": 8330,
+    "output_tokens": 1250,
+    "seconds": 19.35077117400033,
+    "usage_complete": true
+  }
+}

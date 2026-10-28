@@ -69,7 +69,8 @@ def investigate(store, state, origin, provider=None):
         diagnose("provider", "interrupted")
         state["events"].append("Interrupted model call: reservation retained; actual usage unknown.")
     if not state["messages"]:
-        state["messages"] = initial_messages(scenario, state["config"].get("prompt_variant", "original"))
+        state["messages"] = initial_messages(scenario, state["config"].get("prompt_variant", "original"),
+                                             state["config"].get("guidance_variant", "standard"))
     save()
     try:
         while True:

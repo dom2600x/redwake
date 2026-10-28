@@ -1,0 +1,66 @@
+{
+  "run_id": "44e6dc4d50b8",
+  "results": [
+    {
+      "path": "/api/records/doc_k4",
+      "verdict": "vulnerable",
+      "evidence_ids": [
+        6,
+        15
+      ]
+    },
+    {
+      "path": "/api/files/file_x9",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        16
+      ]
+    },
+    {
+      "path": "/api/records/inv_m8",
+      "verdict": "protected",
+      "evidence_ids": [
+        11,
+        17
+      ]
+    },
+    {
+      "path": "/api/records/note_q2",
+      "verdict": "protected",
+      "evidence_ids": [
+        12,
+        18
+      ]
+    },
+    {
+      "path": "/api/records/guide_h6",
+      "verdict": "public_allowed",
+      "evidence_ids": [
+        7,
+        14
+      ]
+    },
+    {
+      "path": "/api/exports/export_z3",
+      "verdict": "inconclusive",
+      "evidence_ids": [
+        13
+      ]
+    }
+  ],
+  "status": "stopped",
+  "scenario": "discovery_deep",
+  "metrics": {
+    "correct_findings": 1,
+    "missed_flaws": 1,
+    "false_positives": 0,
+    "correct_verdicts": 5,
+    "inconclusive": 2,
+    "requests": 23,
+    "model_calls": 24,
+    "input_tokens": 43348,
+    "output_tokens": 2421,
+    "seconds": 18.770895067998936,
+    "usage_complete": true
+  }
+}

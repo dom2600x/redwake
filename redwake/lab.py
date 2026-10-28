@@ -5,7 +5,7 @@ import threading
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from .contracts import RESOURCES, resources_for, discovery_layout
+from .contracts import RESOURCES, resources_for, discovery_layout, navigation_for
 from .guidance import discovery_scenario
 
 
@@ -22,15 +22,8 @@ def lab(mode="fixed", scenario="classic"):
     resources = resources_for(scenario)
     layout = discovery_layout(scenario if discovery_scenario(scenario) else "discovery")
     projects = layout["projects"]
-    collection_paths = layout["collection_paths"]
     record_paths = list(resources)
-    collections = {
-        "alice": [record_paths[0], record_paths[4]] if discovery_scenario(scenario) else [],
-        "bob": [record_paths[2], record_paths[3], record_paths[5]] if discovery_scenario(scenario) else [],
-    }
-    navigation = {"/api/projects"}
-    for actor, project in projects.items():
-        navigation.update({"/api/projects/" + project, collection_paths[actor]})
+    navigation = navigation_for(scenario) if discovery_scenario(scenario) else {}
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -40,20 +33,16 @@ def lab(mode="fixed", scenario="classic"):
             behaviour = record.get("behaviour", mode) if record else mode
             if actor is None:
                 status, body = 401, {"error": "unauthenticated"}
-            elif discovery_scenario(scenario) and self.path in navigation:
+            elif discovery_scenario(scenario) and (self.path in navigation or self.path == "/api/projects"):
                 if mode == "broken":
                     status, body = 503, {"error": "unavailable"}
                 elif self.path == "/api/projects":
                     status, body = 200, {"projects": [{"id": projects[actor], "links": {
                         "self": "/api/projects/" + projects[actor]}}]}
-                elif self.path not in {"/api/projects/" + projects[actor], collection_paths[actor]}:
+                elif navigation[self.path]['actor'] != actor:
                     status, body = 404, {"error": "not found"}
-                elif self.path == collection_paths[actor]:
-                    status, body = 200, {"records": [{"links": {"self": path}}
-                                                   for path in collections[actor]]}
                 else:
-                    status, body = 200, {"id": projects[actor], "links": {
-                        "records": collection_paths[actor]}}
+                    status, body = 200, navigation[self.path]['body']
             elif record is None:
                 status, body = 404, {"error": "not found"}
             elif mode == "broken" or behaviour == "broken":
@@ -92,7 +81,5 @@ def allowed_paths(scenario="classic"):
     paths = set(resources_for(scenario))
     if discovery_scenario(scenario):
         paths.add("/api/projects")
-        layout = discovery_layout(scenario)
-        for actor, project in layout["projects"].items():
-            paths.update({"/api/projects/" + project, layout["collection_paths"][actor]})
+        paths.update(navigation_for(scenario))
     return paths
