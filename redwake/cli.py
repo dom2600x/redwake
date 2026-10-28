@@ -30,6 +30,7 @@ def main(argv=None):
     demo.add_argument("--scenario", choices=SCENARIOS, default="classic")
     demo.add_argument("--mode", choices=MODES, default="vulnerable")
     demo.add_argument("--backend", choices=("baseline", "ollama"), default="baseline")
+    demo.add_argument("--contract", type=Path, help="Enable model finding submission with a saved read policy")
     demo.add_argument("--model", default="gpt-oss:120b")
     demo.add_argument("--endpoint", choices=("https://ollama.com", "http://127.0.0.1:11434"), default="https://ollama.com")
     for name in DEFAULT_LIMITS:
@@ -124,8 +125,17 @@ def main(argv=None):
                                   k: getattr(args, "max_" + k) or default_limits[k] for k in DEFAULT_LIMITS}}
                     if args.scenario in ('discovery_deep', 'discovery_branch'):
                         config['guidance_variant'] = 'graph'
+                    if args.contract:
+                        from .submission import check_contract
+                        contract = json.loads(args.contract.read_text())
+                        check_contract(contract, args.scenario)
+                        if args.backend != 'ollama': raise ValueError('--contract requires --backend ollama')
+                        config['access_contract'] = contract
                     state = None
                 provider = Ollama(config["model"], config["endpoint"]) if config["backend"] == "ollama" else None
+                if config.get('access_contract') is not None:
+                    from .submission import SUBMISSION_TOOLS
+                    provider.tools = SUBMISSION_TOOLS
                 if state is None:
                     state = store.create(config)
                 print("Run: " + state["id"], flush=True)

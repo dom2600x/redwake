@@ -108,9 +108,10 @@ def initial_messages(scenario="classic", prompt_variant="original", guidance_var
 
 
 class Ollama:
-    def __init__(self, model, endpoint="https://ollama.com"):
+    def __init__(self, model, endpoint="https://ollama.com", tools=None):
         if endpoint not in ("https://ollama.com", "http://127.0.0.1:11434"):
             raise ValueError("Use Ollama Cloud or the local Ollama endpoint")
+        self.tools = TOOLS if tools is None else tools
         self.model, self.endpoint = model, endpoint
         self.key = os.environ.get("OLLAMA_API_KEY") if endpoint == "https://ollama.com" else None
         if endpoint == "https://ollama.com" and not self.key:
@@ -122,7 +123,7 @@ class Ollama:
             headers["Authorization"] = "Bearer " + self.key
         try:
             status, response = request_json(self.endpoint + "/api/chat", headers, {
-                "model": self.model, "messages": messages, "tools": TOOLS, "stream": False,
+                "model": self.model, "messages": messages, "tools": self.tools, "stream": False,
                 "options": {"temperature": 0, "num_predict": output_limit}},
                 timeout=timeout, limit=1048576, strict_json=True,
                 use_env_proxy=self.endpoint == "https://ollama.com")

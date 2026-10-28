@@ -45,10 +45,37 @@ consistent, not that every submission was accepted. Copied proof directories nee
 original database. Hashes detect changes, not authorship or authenticity; saved evidence
 and the supplied policy are trusted inputs, not a signed observation from the target.
 
+## Model-loop submission
+
+Enable the opt-in protocol with a saved contract:
+
+```sh
+python3 -m redwake demo --backend ollama --model YOUR_MODEL \
+  --contract examples/findings/contract.json
+```
+
+This command makes live provider calls and needs the usual provider configuration.
+The model receives policy rule IDs, paths, ownership and permitted readers; identity
+assertions and expected fixture verdicts remain private. Its tools are `probe`,
+`submit_finding` and `finish_investigation`. Submission returns validation feedback.
+Malformed tool arguments still stop the run; a well-formed unsupported claim is retained
+and rejected, allowing correction within the original model/time/token allowances.
+
+Coverage alone no longer finishes these runs. The model explicitly finishes, possibly
+with no findings. Reporting tools do not consume network-request allowance, so a model
+may report after spending its final probe, while model-call and time limits still apply.
+Resume preserves the contract, pending tools, submitted claims and consumed allowances.
+Ordinary `export` and `verify` support these runs without a live provider.
+
+Reports separate fixture scores from submitted claims. Each submission retains its
+validation at the recorded evidence boundary plus a current validation using the latest
+observations. An earlier acceptance is not presented as current proof after contradictory
+evidence. Completion means reporting finished; it does not assert security or completeness.
+Historical comparisons retain their original probe-only tools and completion behavior.
+
 ## Current boundary
 
 The evaluator accepts nonfixture actor names, paths and nested JSON-object identities.
 The capture workflow still uses the existing bounded lab executor and its export format.
-This milestone does not yet connect finding submission to a live model tool, support
-external targets, or grade natural-language security reasoning. Those integrations follow
-this deterministic foundation. No new model-capability claims arise from these tests.
+This milestone does not support external targets or grade natural-language security
+reasoning. Those integrations follow this bounded submission workflow. No new model-capability claims arise from these tests.

@@ -54,11 +54,20 @@ def write_report(state, directory):
         section.append("")
         position = report.index("## Interpretation")
         report[position:position] = section
+    if 'access_contract' in state['config']:
+        from .submission import recheck
+        submissions = recheck(state)
+        report += ['## Submitted findings', '',
+                   'These are model-submitted claims, separate from fixture scores. Completion does not imply security.',
+                   'Acceptance is rechecked against current evidence; earlier decisions are retained for audit.', '',
+                   '```json', json.dumps(submissions, indent=2), '```', '']
     (directory / "report.md").write_text("\n".join(report))
     (directory / "evidence.json").write_text(json.dumps(state["evidence"], indent=2) + "\n")
     result = {"run_id": state["id"], "results": results, "status": state["status"],
               "scenario": scenario, "metrics": metrics}
     if diagnostics:
         result["diagnostics"] = diagnostics
+    if 'access_contract' in state['config']:
+        result['submitted_findings'] = submissions
     (directory / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     return directory / "report.md"
