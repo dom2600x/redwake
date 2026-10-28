@@ -32,7 +32,8 @@ def write_report(state, directory):
                    state["requests"], state["model_calls"], state["input_tokens"], state["output_tokens"]),
                "Output tokens reserved: %d. Recorded active time: %.2fs." % (
                    state["reserved_output_tokens"], state["elapsed"]),
-               "Provider usage complete: %s. Dollar cost is not available from this harness." % state["usage_complete"],
+               ("Provider usage complete: %s. Cash charges are not available from this harness." if 'cost_policy' in state['config'] else
+                "Provider usage complete: %s. Dollar cost is not available from this harness.") % state["usage_complete"],
                "", "## Interpretation", "",
                "A vulnerable verdict requires the private record to be returned to both its owner and another actor. "
                "Protected means the tested cross-account read was denied with an owner success control. "
@@ -61,6 +62,12 @@ def write_report(state, directory):
                    'These are model-submitted claims, separate from fixture scores. Completion does not imply security.',
                    'Acceptance is rechecked against current evidence; earlier decisions are retained for audit.', '',
                    '```json', json.dumps(submissions, indent=2), '```', '']
+    if 'cost_policy' in state['config']:
+        from .costs import recheck as recheck_costs
+        cost = recheck_costs(state)
+        report += ['## Usage valuation', '',
+                   'Rate-card value is separate from cash billing. Input reservations and budget limits are estimates, not provider-enforced spending caps.',
+                   '', '```json', json.dumps(cost, indent=2), '```', '']
     (directory / "report.md").write_text("\n".join(report))
     (directory / "evidence.json").write_text(json.dumps(state["evidence"], indent=2) + "\n")
     result = {"run_id": state["id"], "results": results, "status": state["status"],
@@ -69,5 +76,7 @@ def write_report(state, directory):
         result["diagnostics"] = diagnostics
     if 'access_contract' in state['config']:
         result['submitted_findings'] = submissions
+    if 'cost_policy' in state['config']:
+        result['cost'] = cost
     (directory / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     return directory / "report.md"
