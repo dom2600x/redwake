@@ -2,7 +2,7 @@
 
 Find weaknesses. Prove impact.
 
-Redwake is an early research prototype for evidence-backed API authorisation testing. It runs a synthetic application on an ephemeral loopback port, investigates its access rules, and produces reproducible request/response evidence. It includes classic and discovery labs, a scripted baseline, and repeatable model comparisons.
+Redwake is an early research prototype for evidence-backed API authorisation testing. It runs a synthetic application on an ephemeral loopback port, investigates its access rules, and produces reproducible request/response evidence. It includes classic and discovery labs, a scripted investigator, portable evidence bundles and offline verification. Optional model backends can direct the same bounded probes.
 
 ## Run it
 
@@ -23,23 +23,19 @@ The discovery scenario starts with account-specific project listings, follows ne
 
 The [documentation index](docs/README.md) gives a reading order for guides, design decisions, the roadmap and retained experiment reports.
 
-Run a repeatable discovery comparison with the scripted baseline and all three models:
+A completed investigation can be exported and verified without its original database:
 
 ```sh
-python3 -m redwake.comparison --repeat 3
-python3 -m redwake.comparison --profile sequential --repeat 3
-python3 -m redwake.comparison --profile batching --repeat 3
-python3 -m redwake.discovery_suite --directory .redwake/varied-pilot --repeat 1
+python3 -m redwake export RUN_ID --output .redwake/evidence-RUN_ID
+python3 -m redwake verify .redwake/evidence-RUN_ID
 ```
 
-Each model and baseline runs both vulnerable and fixed discovery behaviour in each repetition. Model order rotates between blocks; inference runs serially with equal budgets. The batch retains stopped runs and writes SQLite state, individual reports and `comparison.json` under a fresh `.redwake/discovery-comparison-<profile>-<timestamp>/` directory. This command makes live Ollama Cloud calls and requires the configured API key. Reports record correct findings, missed flaws, false positives, requests, returned tokens and active time. Scores grade verifier-proven findings, not model prose.
-
-The default `current` profile preserves the original prompt and allowances.
-`sequential` allows 24 calls with matching output reservations; `batching` adds
-batching advice at the original 16-call allowance. See the
-[comparison method](docs/comparison-method.md).
-The [varied discovery suite](docs/varied-discovery.md) runs those profiles in
-rotating order against the original, renamed-ID and opaque-link fixtures.
+Export also supports stopped investigations, preserving incomplete coverage and consumed
+allowances. It creates a fresh directory containing the saved state, captured responses,
+results, report and SHA-256 manifest. Verify re-scores those responses offline; it does
+not contact the application or require a model API key. A changed or inconsistent bundle
+returns a nonzero exit code. Hashes detect changes, not authorship. See the
+[evidence guide](docs/artifacts.md) before sharing model conversations.
 
 ```sh
 python3 -m redwake resume RUN_ID
@@ -55,7 +51,7 @@ Global options go before the command:
 python3 -m redwake --db /tmp/redwake.sqlite3 --reports /tmp/redwake-reports demo
 ```
 
-## Ollama experiments
+## Optional model backend
 
 Set `OLLAMA_API_KEY` in your environment using an Ollama API key, then run:
 
@@ -103,10 +99,19 @@ The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment
 - `providers.py`: Ollama adapter and tool schema.
 - `store.py`: SQLite checkpoints.
 - `report.py`: Markdown and JSON artifacts.
-- `cli.py`: demo, evaluation, resume and offline replay.
+- `artifacts.py`: portable investigation export and shared offline verification.
+- `cli.py`: demo, evaluation, resume, replay, export and verification.
 - `comparison.py`: repeated baseline and live model comparisons.
 
 The CLI takes an exclusive database lock to prevent concurrent writers from reusing allowances. An interrupted read may be retried on resume, with a new reservation; probes are read-only. The library itself is intended for a single runner per database. Stored evidence is a local research artifact, not a signed audit trail.
+
+## Research history
+
+The retained comparisons informed the implementation and remain available in the
+[documentation index](docs/README.md). They are not prerequisites for using or validating
+Redwake. The [comparison method](docs/comparison-method.md) documents optional live
+research commands and their costs. New live studies require a specific engineering
+question and a decision that cannot be made with deterministic tests or retained evidence.
 
 ## Current limitations
 

@@ -1,0 +1,29 @@
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Python 3.9 has no setup-python build for Ubuntu 26.04.
+          - os: ubuntu-22.04
+            python: '3.9'
+          - os: macos-latest
+            python: '3.12'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Test bounded investigation and evidence workflows
+        run: python -m unittest discover -s tests -v
+      - name: Verify retained evidence without inference
+        run: python scripts/verify_experiments.py
