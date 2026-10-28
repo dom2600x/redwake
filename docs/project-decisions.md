@@ -65,6 +65,14 @@ The [OpenAI pricing notes](openai-pricing.md) record checked rates, cache-write 
 context/mode conditions and Responses API implications. Published pricing does not establish
 account entitlement; gated models are not development or release dependencies.
 
+## Anthropic pricing and access
+
+The owner supplied the [official Claude pricing reference](https://platform.claude.com/docs/en/about-claude/pricing)
+and confirms that restricted Mythos models are currently unavailable to this project.
+The [Anthropic pricing notes](anthropic-pricing.md) record checked rates, context tiers,
+cache accounting and processing modifiers. Exclude Mythos from acceptance checks and
+release dependencies. Other model entitlements remain unverified.
+
 ## Cost accounting requirements
 
 Record usage per call and aggregate by investigation/provider. Use decimal arithmetic

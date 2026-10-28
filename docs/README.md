@@ -29,6 +29,7 @@ graphs with graph-aware guidance and repeated within-condition order balance.
 
 - [Current project decisions](project-decisions.md): delivery direction, security acceptance, model usage, cost accounting and user-supplied Ollama pricing/quota information.
 - [OpenAI pricing and access](openai-pricing.md): dated official pricing reference, billing conditions and the project's Daybreak access restriction.
+- [Anthropic pricing and access](anthropic-pricing.md): dated official pricing reference, cache accounting and the project's Mythos access restriction.
 - [Roadmap](roadmap.md): the canonical next steps and their dependencies.
 - [Initial engineering decisions](decisions.md): the dated 2026-10-10 classic-lab design; the discovery guide describes the current model guidance.
 
