@@ -8,7 +8,7 @@ conclusions describe that snapshot.
 
 1. [Project README](../README.md): setup, commands, execution controls and current limitations.
 2. [Discovery lab](discovery-lab.md): navigation, access cases, private verifier rules and metrics.
-3. [Experiment artifacts](artifacts.md): publishing and importing retained evidence, provenance and offline checks.
+3. [Evidence artifacts](artifacts.md): exporting individual investigations, retained evidence, provenance and offline checks.
 
 Generated runtime state stays in the ignored `.redwake/` directory. Published
 experiment bundles under `docs/experiments/` contain the evidence retained with

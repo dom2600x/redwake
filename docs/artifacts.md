@@ -1,9 +1,37 @@
-# Experiment artifacts
+# Evidence artifacts
 
 `.redwake/` is generated runtime state and stays ignored by Git. Published
 experiments have selected, immutable evidence bundles under
 `docs/experiments/<date>-<name>/`, so a fresh clone can inspect and recheck them.
 See the [documentation index](README.md) for their reading order.
+
+## Export an ordinary investigation
+
+```sh
+python3 -m redwake export RUN_ID --output .redwake/evidence-RUN_ID
+python3 -m redwake verify .redwake/evidence-RUN_ID
+```
+
+Global `--db` selects the source database before `export`. Export uses a read-only
+SQLite connection under the CLI's database lock; it does not resume or modify the run.
+Only completed or stopped runs can be exported, to a new directory. Pending work,
+failed calls, usage incompleteness and consumed allowances remain visible in the state.
+No model calls or target requests are made by either command.
+
+A single-run bundle uses the existing evidence layout with `kind: investigation`:
+`manifest.json`, `results.json` and `runs/RUN_ID/{state,evidence,result}.json` plus
+`runs/RUN_ID/report.md`. Verification checks the complete file inventory and hashes,
+recomputes verdicts and scores, and checks scope, accounting and result consistency.
+Copy the directory to another machine with Redwake to verify it without the original
+SQLite database. `verify` also accepts retained experiment bundles. Success exits zero;
+missing, altered or inconsistent bundles exit 2.
+
+The bundle includes the saved model conversation verbatim. Synthetic lab credentials
+and provider authorization headers are not stored, but free-form text is not a general
+secret-redaction system: review the bundle before publishing it. Export-time verifier
+fingerprints identify the code used to export; ordinary runs do not record their creation
+revision. Hashes are integrity checks, not signatures or proof of authorship. Offline
+verification re-scores captured evidence; it does not prove the application's present state.
 
 ## What a retained bundle contains
 

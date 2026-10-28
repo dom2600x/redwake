@@ -1,6 +1,7 @@
 import argparse
 import fcntl
 import json
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -40,12 +41,37 @@ def main(argv=None):
     evaluate = commands.add_parser("evaluate", help="Evaluate the scripted baseline across four lab behaviours")
     evaluate.add_argument("--scenario", choices=SCENARIOS, default="classic")
     evaluate.add_argument("--repeat", type=positive, default=1)
+    export = commands.add_parser("export", help="Export a saved investigation as a portable evidence bundle")
+    export.add_argument("run_id")
+    export.add_argument("--output", type=Path, required=True)
+    verify = commands.add_parser("verify", help="Verify a saved evidence bundle offline")
+    verify.add_argument("directory", type=Path)
     args = parser.parse_args(argv)
+    if args.command == "verify":
+        from .artifacts import verify_bundle
+        try:
+            result = verify_bundle(args.directory)
+        except (KeyError, OSError, TypeError, ValueError):
+            print("redwake: verification failed: missing, altered or inconsistent evidence bundle", file=sys.stderr)
+            return 2
+        print("%(runs)d saved run(s) verified offline; no network or model calls." % result)
+        return 0
+    if args.command == "export" and not Path(args.db).is_file():
+        print("redwake: source database does not exist", file=sys.stderr)
+        return 2
     default_limits = DISCOVERY_LIMITS if discovery_scenario(getattr(args, "scenario", "classic")) else DEFAULT_LIMITS
     Path(args.db).parent.mkdir(parents=True, exist_ok=True)
     try:
         with open(str(args.db) + ".lock", "w") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            if args.command == "export":
+                from .artifacts import export_run
+                with sqlite3.connect(Path(args.db).resolve().as_uri() + "?mode=ro", uri=True) as db:
+                    row = db.execute("SELECT state FROM runs WHERE id=?", (args.run_id,)).fetchone()
+                    if row is None:
+                        raise ValueError("Unknown run: " + args.run_id)
+                    print(export_run(json.loads(row[0]), args.output).resolve())
+                return 0
             store = Store(args.db)
             try:
                 if args.command == "replay":
@@ -96,6 +122,9 @@ def main(argv=None):
                 return 0 if state["status"] == "completed" else 2
             finally:
                 store.close()
+    except (KeyError, TypeError, sqlite3.Error):
+        print("redwake: invalid or unavailable saved run", file=sys.stderr)
+        return 2
     except (ValueError, OSError) as exc:
         print("redwake: " + str(exc), file=sys.stderr)
         return 2
