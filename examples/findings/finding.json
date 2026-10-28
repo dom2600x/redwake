@@ -1,0 +1,10 @@
+{
+  "rule_id": "private-document-read",
+  "actor": "bob",
+  "evidence_ids": [1, 2],
+  "impact": "unauthorized_record_read",
+  "reproduction": [
+    {"method": "GET", "actor": "alice", "path": "/api/documents/101", "evidence_id": 1},
+    {"method": "GET", "actor": "bob", "path": "/api/documents/101", "evidence_id": 2}
+  ]
+}

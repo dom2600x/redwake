@@ -56,6 +56,15 @@ scope, not an implied part of this release.
 3. Review and merge the delivery changes, then run the documented workflow from a clean
    checkout. Do not call the release complete while a required check is failing.
 
+## Next implementation work
+
+The [current decision record](project-decisions.md) captures the owner discussion and
+distinguishes supplied provider information from unresolved questions. Prioritize
+model-submitted security findings and evidence validation, a provider usage/cost contract,
+then additional adapters and configurable access contracts. Model security capability
+remains unproven; select a backend through a bounded security acceptance check once that
+workflow is implemented. Pricing and free quota are separate accounting concerns.
+
 ## Research policy
 
 Live model comparisons are optional development tools, not the roadmap's default next
@@ -76,3 +85,7 @@ External APIs would require user-supplied access contracts, explicit target and 
 handling, suitable evidence matching and scope enforcement. Those are product requirements
 for a later release and must be designed and implemented directly. More synthetic model
 comparisons do not implement them or substitute for their acceptance tests.
+
+The submitted-finding foundation now provides offline policy/claim validation and portable
+proofs; see [the guide](submitted-findings.md). Model-loop submission remains the next
+integration task. The historical fixture scores remain separate from submitted claims.

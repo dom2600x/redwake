@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "actors": ["alice", "bob"],
+  "rules": [{
+    "id": "private-document-read",
+    "path": "/api/documents/101",
+    "owner": "alice",
+    "allowed_actors": ["alice"],
+    "identity": {"/owner": "alice", "/data": "alice-private-document"}
+  }]
+}

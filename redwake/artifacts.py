@@ -53,6 +53,9 @@ def verify_bundle(directory):
     manifest = json.loads((directory / "manifest.json").read_text())
     if not isinstance(manifest, dict):
         raise ValueError("Invalid manifest")
+    if manifest.get('kind') == 'finding_proof':
+        from .findings import verify_proof
+        return verify_proof(directory)
     if manifest.get('schema_version') == 2 and manifest.get('kind') == 'transcript_reduction':
         from .transcript_experiment import verify_bundle as verify_transcript
         return verify_transcript(directory)

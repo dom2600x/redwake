@@ -46,7 +46,21 @@ def main(argv=None):
     export.add_argument("--output", type=Path, required=True)
     verify = commands.add_parser("verify", help="Verify a saved evidence bundle offline")
     verify.add_argument("directory", type=Path)
+    finding = commands.add_parser("validate-finding", help="Check a submitted finding against a contract and saved evidence")
+    finding.add_argument("--contract", type=Path, required=True)
+    finding.add_argument("--finding", type=Path, required=True)
+    finding.add_argument("--bundle", type=Path, required=True)
+    finding.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.command == "validate-finding":
+        from .findings import export_proof, read_json
+        try:
+            result = export_proof(args.bundle, read_json(args.contract), read_json(args.finding), args.output)
+        except (KeyError, OSError, TypeError, ValueError, AttributeError):
+            print("redwake: invalid contract, finding or evidence bundle", file=sys.stderr)
+            return 2
+        print(json.dumps(result))
+        return 0 if result['accepted'] else 1
     if args.command == "verify":
         from .artifacts import verify_bundle
         try:

@@ -51,6 +51,13 @@ Global options go before the command:
 python3 -m redwake --db /tmp/redwake.sqlite3 --reports /tmp/redwake-reports demo
 ```
 
+## Validate submitted findings
+
+Declare read-access policy and validate a structured finding against saved evidence with
+`validate-finding`. Accepted and rejected claims can be exported and rechecked offline.
+See the [submitted finding guide](docs/submitted-findings.md) and example contracts.
+This foundation does not yet add a finding-submission tool to the model loop.
+
 ## Optional model backend
 
 Set `OLLAMA_API_KEY` in your environment using an Ollama API key, then run:
