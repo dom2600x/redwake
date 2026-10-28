@@ -44,6 +44,12 @@ controls), bringing the combined saved inventory to 303 runs/trials. It uses the
 schema-2 `transcript_reduction` kind, with declared input transformations, paired
 request-construction routes and a complete snapshot plus reviewed report.
 
+The varied-discovery pilot adds 72 investigations with per-slot fixture/profile
+and execution positions, bringing the total to 375 saved runs/trials. It uses the
+original state/evidence/report bundle format with a versioned suite plan. The
+exporter and offline verifier score each state against its recorded fixture and
+check the complete ordered matrix, per-profile controls and fixture-specific summaries.
+
 ## Verify from a fresh clone
 
 From the repository root, with Python 3.9+:

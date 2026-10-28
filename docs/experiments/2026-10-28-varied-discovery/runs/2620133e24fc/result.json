@@ -1,0 +1,58 @@
+{
+  "run_id": "2620133e24fc",
+  "results": [
+    {
+      "path": "/api/records/doc_r8",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/files/file_t4",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/records/inv_s3",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/records/note_v1",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/records/guide_w6",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    },
+    {
+      "path": "/api/exports/export_y5",
+      "verdict": "inconclusive",
+      "evidence_ids": []
+    }
+  ],
+  "status": "stopped",
+  "scenario": "discovery_ids",
+  "metrics": {
+    "correct_findings": 0,
+    "missed_flaws": 2,
+    "false_positives": 0,
+    "correct_verdicts": 1,
+    "inconclusive": 6,
+    "requests": 6,
+    "model_calls": 7,
+    "input_tokens": 4179,
+    "output_tokens": 323,
+    "seconds": 4.892883501000142,
+    "usage_complete": false
+  },
+  "diagnostics": [
+    {
+      "source": "provider",
+      "category": "http_server",
+      "http_status": 500,
+      "model_call": 7
+    }
+  ]
+}

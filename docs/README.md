@@ -38,6 +38,7 @@ navigation variants while retaining the same access cases and allowances.
 | 2026-10-27 controlled discovery follow-up | [Combined comparison](experiments/2026-10-27-discovery-followup.md) | All 72 runs across separate [current](experiments/2026-10-27-discovery-current/report.md), [sequential](experiments/2026-10-27-discovery-sequential/report.md) and [batching](experiments/2026-10-27-discovery-batching/report.md) bundles |
 | 2026-10-27 provider compatibility | [Compatibility report](experiments/2026-10-27-provider-compatibility/report.md) | All 36 live calls and 36 scripted controls; [inputs and results](experiments/2026-10-27-provider-compatibility/compatibility.json) and [manifest](experiments/2026-10-27-provider-compatibility/manifest.json) |
 | 2026-10-28 transcript reduction | [Reduction report](experiments/2026-10-28-transcript-reduction/report.md) | All 48 calls and 48 scripted controls; [inputs and results](experiments/2026-10-28-transcript-reduction/transcript.json) and [manifest](experiments/2026-10-28-transcript-reduction/manifest.json) |
+| 2026-10-28 varied discovery pilot | [Pilot report](experiments/2026-10-28-varied-discovery/report.md) | All 72 runs across original, renamed-ID and opaque-collection fixtures; [comparison plan](experiments/2026-10-28-varied-discovery/comparison.json) and [manifest](experiments/2026-10-28-varied-discovery/manifest.json) |
 
 These are historical reports, not instructions to rerun an experiment. A new run
 produces a new result and should retain its own provenance. Use the roadmap for
