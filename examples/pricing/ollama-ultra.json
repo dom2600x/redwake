@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "provider": "ollama",
+  "model": "nemotron-3-ultra",
+  "currency": "USD",
+  "source": "Owner-supplied Ollama standard pricing; https://ollama.com/pricing#model-pricing",
+  "as_of": "2026-10-28",
+  "input": "0.10",
+  "cached_input": "0.10",
+  "output": "3.00"
+}

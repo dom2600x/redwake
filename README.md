@@ -114,6 +114,13 @@ The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment
 
 The CLI takes an exclusive database lock to prevent concurrent writers from reusing allowances. An interrupted read may be retried on resume, with a new reservation; probes are read-only. The library itself is intended for a single runner per database. Stored evidence is a local research artifact, not a signed audit trail.
 
+## Usage and cost accounting
+
+Use `--pricing RATE_CARD.json` with an Ollama Cloud demo to retain a per-call usage ledger
+and decimal rate-card valuations. `--billing-context` records free/included/purchased/unknown
+usage; `--max-cost-usd` gates estimated usage value, not actual provider cash charges.
+See [cost accounting](docs/cost-accounting.md) for examples, unknown usage and limitations.
+
 ## Research history
 
 The retained comparisons informed the implementation and remain available in the

@@ -171,11 +171,11 @@ def validate_run(state):
     fields = {'id', 'config', 'status', 'reason', 'requests', 'model_calls',
               'input_tokens', 'output_tokens', 'reserved_output_tokens', 'elapsed',
               'evidence', 'messages', 'pending', 'events', 'usage_complete',
-              'inflight_model', 'diagnostics', 'submissions', 'finding_finished'}
+              'inflight_model', 'diagnostics', 'submissions', 'finding_finished', 'cost_ledger'}
     config_fields = {'backend', 'model', 'endpoint', 'scenario', 'mode', 'limits',
                      'comparison_version', 'experiment_profile', 'prompt_variant',
                      'initial_messages', 'initial_messages_sha256', 'tools_sha256',
-                     'controls', 'guidance_variant', 'access_contract'}
+                     'controls', 'guidance_variant', 'access_contract', 'cost_policy'}
     if not isinstance(state, dict) or set(state) - fields:
         raise ValueError('Unsupported run fields')
     if not isinstance(state.get('id'), str) or not re.fullmatch(r'[0-9a-f]{12}', state['id']):
@@ -191,7 +191,7 @@ def validate_run(state):
     if state['status'] not in ('completed', 'stopped') or state.get('inflight_model'):
         raise ValueError('Run is active; finish or interrupt it before export')
     reasons = {'Time budget exhausted', 'Request budget exhausted', 'Model-call budget exhausted',
-               'Output-token budget exhausted', 'Provider exceeded the requested output-token budget',
+               'Estimated cost budget exhausted', 'Output-token budget exhausted', 'Provider exceeded the requested output-token budget',
                'Rejected tool call outside the lab contract', 'Interrupted; saved progress can be resumed',
                'Operation failed; reservations retained', 'Comparison setup failed; run retained',
                'Rejected invalid or excessive tool-call batch'}
@@ -227,6 +227,8 @@ def validate_run(state):
     if any(e != 'Interrupted model call: reservation retained; actual usage unknown.'
            for e in state['events']):
         raise ValueError('Unsupported event detail')
+    from .costs import recheck as recheck_costs
+    recheck_costs(state)
     from .submission import recheck
     recheck(state)
     for record in state.get('diagnostics', []):
@@ -262,6 +264,9 @@ def run_result(state):
     if 'access_contract' in state['config']:
         from .submission import recheck
         result['submitted_findings'] = recheck(state)
+    if 'cost_policy' in state['config']:
+        from .costs import recheck
+        result['cost'] = recheck(state)
     return result
 
 

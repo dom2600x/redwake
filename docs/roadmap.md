@@ -88,4 +88,6 @@ comparisons do not implement them or substitute for their acceptance tests.
 
 The submitted-finding foundation now provides offline policy/claim validation and portable
 proofs; see [the guide](submitted-findings.md). Opt-in model-loop submission now retains validation feedback and explicit completion.
-Provider usage/cost accounting remains the next integration task. The historical fixture scores remain separate from submitted claims.
+Opt-in Ollama usage ledgers and flat-rate valuations are implemented; see
+[cost accounting](cost-accounting.md). Additional provider adapters and their billing
+normalization remain the next integration task. The historical fixture scores remain separate from submitted claims.

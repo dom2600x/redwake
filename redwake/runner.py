@@ -40,6 +40,10 @@ def investigate(store, state, origin, provider=None):
         return state
     limits = state["config"]["limits"]
     scenario = state["config"].get("scenario", "classic")
+    priced = 'cost_policy' in state['config']
+    if priced:
+        from . import costs
+        costs.validate_policy(state['config']['cost_policy'], state['config'])
     contract = state['config'].get('access_contract')
     if contract is not None:
         from .submission import check_contract
@@ -72,6 +76,7 @@ def investigate(store, state, origin, provider=None):
     state.pop("reason", None)
     if state.pop("inflight_model", False):
         state["usage_complete"] = False
+        if priced: costs.interrupted(state)
         diagnose("provider", "interrupted")
         state["events"].append("Interrupted model call: reservation retained; actual usage unknown.")
     if not state["messages"]:
@@ -115,6 +120,8 @@ def investigate(store, state, origin, provider=None):
                         return stop("Output-token budget exhausted")
                     if provider is None:
                         raise ValueError("Ollama provider required")
+                    if priced and not costs.reserve(state, output_limit):
+                        return stop("Estimated cost budget exhausted")
                     state["model_calls"] += 1
                     state["reserved_output_tokens"] += output_limit
                     state["inflight_model"] = True
@@ -132,6 +139,12 @@ def investigate(store, state, origin, provider=None):
                             state[field] += count
                         else:
                             state["usage_complete"] = False
+                    if priced:
+                        costs.received(state, response)
+                        save()
+                        budget = state["config"]["cost_policy"]["max_cost_usd"]
+                        if budget is not None and costs.money(costs.summary(state)["estimated_exposure_usd"]) > costs.money(budget):
+                            return stop("Estimated cost budget exhausted")
                     message = response["message"]
                     if message.get("role") != "assistant":
                         raise ProviderError("response_protocol")
@@ -227,11 +240,13 @@ def investigate(store, state, origin, provider=None):
                 state["messages"].append({"role": "tool", "tool_name": "probe", "content": json.dumps(evidence)})
             save()
     except KeyboardInterrupt:
+        if priced: costs.interrupted(state)
         if state.pop("inflight_model", False):
             state["usage_complete"] = False
             diagnose("provider", "interrupted")
         return stop("Interrupted; saved progress can be resumed")
     except Exception as exc:
+        if priced: costs.interrupted(state)
         inflight = state.pop("inflight_model", False)
         if inflight:
             state["usage_complete"] = False
