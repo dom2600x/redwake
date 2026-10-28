@@ -4,7 +4,7 @@ import http.client
 import json
 import os
 import urllib.error
-from .guidance import ACTOR_NAMES, API_GUIDANCE, discovery_scenario
+from .guidance import ACTOR_NAMES, API_GUIDANCE, GRAPH_GUIDANCE, discovery_scenario
 from .transport import ResponseFormatError, request_json
 
 
@@ -81,12 +81,14 @@ TOOLS = [{"type": "function", "function": {
                        "path": {"type": "string", "description": "Relative API path from documentation or a response link."}}}}}]
 
 
-def initial_messages(scenario="classic", prompt_variant="original"):
+def initial_messages(scenario="classic", prompt_variant="original", guidance_variant="standard"):
+    if guidance_variant not in ('standard', 'graph') or (guidance_variant == 'graph' and not discovery_scenario(scenario)):
+        raise ValueError('Unknown or incompatible guidance variant')
     if prompt_variant not in ("original", "batching"):
         raise ValueError("Unknown prompt variant")
     if prompt_variant == "batching" and not discovery_scenario(scenario):
         raise ValueError("Batching guidance requires the discovery scenario")
-    guidance = (API_GUIDANCE if discovery_scenario(scenario) else
+    guidance = ((GRAPH_GUIDANCE if guidance_variant == 'graph' else API_GUIDANCE) if discovery_scenario(scenario) else
                 "Test /api/documents/101, /api/invoices/inv_b7 and /api/documents/public "
                 "with alice and bob. Inspect returned content and use owner controls.")
     if prompt_variant == "batching":

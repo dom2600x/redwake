@@ -32,7 +32,7 @@ from scripts.verify_experiments import verify_bundle
 
 CONFIG_FIELDS = {"backend", "model", "endpoint", "scenario", "mode", "limits",
                  "comparison_version", "experiment_profile", "prompt_variant",
-                 "initial_messages", "initial_messages_sha256", "tools_sha256", "controls"}
+                 "initial_messages", "initial_messages_sha256", "tools_sha256", "controls", "guidance_variant"}
 STATE_FIELDS = {"id", "config", "status", "reason", "requests", "model_calls",
                 "input_tokens", "output_tokens", "reserved_output_tokens", "elapsed",
                 "evidence", "messages", "pending", "events", "usage_complete",
@@ -48,7 +48,7 @@ REASONS = {"Time budget exhausted", "Request budget exhausted", "Model-call budg
 ACCOUNTING = ("requests", "model_calls", "input_tokens", "output_tokens",
               "reserved_output_tokens", "usage_complete")
 PROFILE_FIELDS = {"comparison_version", "experiment_profile", "prompt_variant",
-                  "initial_messages", "initial_messages_sha256", "tools_sha256", "controls"}
+                  "initial_messages", "initial_messages_sha256", "tools_sha256", "controls", "guidance_variant"}
 
 
 def digest(raw):
@@ -124,13 +124,15 @@ def validate_state(state, batch):
 
 
 def validate_batch(batch, states):
-    if batch.get('suite_version') == 1:
+    if batch.get('suite_version') in (1, 2):
         from redwake.discovery_suite import verify_comparison
         ids = verify_comparison(batch, states)
         for state in states.values():
             validate_state(state, dict(endpoint=batch['endpoint'], limits=state['config']['limits']))
         return ids
     known_fields(batch, BATCH_FIELDS)
+    if 'guidance_variant' in batch or any('guidance_variant' in state['config'] for state in states.values()):
+        raise ValueError('Legacy comparisons do not support changed API guidance')
     if (batch["scenario"] != "discovery" or batch["endpoint"] not in
             ("https://ollama.com", "http://127.0.0.1:11434")
             or batch["models"] != list(MODELS) or batch["modes"] != list(MODES)

@@ -22,6 +22,8 @@ The [transcript experiment](transcript-experiment.md) tests declared reductions
 and tool-result correlation with a direct native API cross-check.
 The [varied discovery suite](varied-discovery.md) rotates profiles across ID and
 navigation variants while retaining the same access cases and allowances.
+The [counterbalanced topology suite](topology-suite.md) adds deeper and branching
+graphs with graph-aware guidance and repeated within-condition order balance.
 
 ## Design and roadmap
 

@@ -57,6 +57,8 @@ def main(argv=None):
                         for mode in MODES:
                             config = {"backend": "baseline", "mode": mode, "scenario": args.scenario,
                                       "limits": dict(default_limits)}
+                            if args.scenario in ('discovery_deep', 'discovery_branch'):
+                                config['guidance_variant'] = 'graph'
                             state = store.create(config)
                             with lab(mode, args.scenario) as origin:
                                 investigate(store, state, origin)
@@ -80,6 +82,8 @@ def main(argv=None):
                     config = {"backend": args.backend, "mode": args.mode, "model": args.model,
                               "endpoint": args.endpoint, "scenario": args.scenario, "limits": {
                                   k: getattr(args, "max_" + k) or default_limits[k] for k in DEFAULT_LIMITS}}
+                    if args.scenario in ('discovery_deep', 'discovery_branch'):
+                        config['guidance_variant'] = 'graph'
                     state = None
                 provider = Ollama(config["model"], config["endpoint"]) if config["backend"] == "ollama" else None
                 if state is None:
