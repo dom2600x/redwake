@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 from redwake.cli import main
 from redwake.artifacts import export_run, verify_bundle
-from redwake.findings import evaluate, export_proof, validate_contract
+from redwake.findings import evaluate, export_proof, validate_contract, inventory
 from redwake.lab import lab
 from redwake.runner import investigate, DEFAULT_LIMITS
 from redwake.store import Store
@@ -100,3 +100,9 @@ class FindingTests(unittest.TestCase):
             self.assertFalse((root/'absent').exists())
             result=root/'proof'/'validation.json'; result.write_text('{}')
             with self.assertRaises(ValueError): verify_bundle(root/'proof')
+            manifest_path=root/'proof'/'manifest.json'
+            manifest=json.loads(manifest_path.read_text())
+            manifest['files']=inventory(root/'proof')
+            manifest_path.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, 'validation differs'):
+                verify_bundle(root/'proof')
