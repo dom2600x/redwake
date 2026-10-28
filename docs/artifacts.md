@@ -39,6 +39,11 @@ manifest covers the complete input/result snapshot and reviewed report; the
 offline verifier rechecks the paired plan and proposal classifications separately
 from discovery-run evidence. Counts printed as runs/trials include both types.
 
+The October 28 transcript-reduction bundle adds 96 trials (48 live calls and 48
+controls), bringing the combined saved inventory to 303 runs/trials. It uses the
+schema-2 `transcript_reduction` kind, with declared input transformations, paired
+request-construction routes and a complete snapshot plus reviewed report.
+
 ## Verify from a fresh clone
 
 From the repository root, with Python 3.9+:
