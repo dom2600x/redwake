@@ -56,7 +56,9 @@ python3 -m redwake --db /tmp/redwake.sqlite3 --reports /tmp/redwake-reports demo
 Declare read-access policy and validate a structured finding against saved evidence with
 `validate-finding`. Accepted and rejected claims can be exported and rechecked offline.
 See the [submitted finding guide](docs/submitted-findings.md) and example contracts.
-This foundation does not yet add a finding-submission tool to the model loop.
+Use `demo --backend ollama --contract CONTRACT.json` to enable model submission and
+validation feedback. These runs require an explicit finish and retain accepted/rejected
+claims separately from fixture scores.
 
 ## Optional model backend
 

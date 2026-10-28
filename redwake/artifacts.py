@@ -171,11 +171,11 @@ def validate_run(state):
     fields = {'id', 'config', 'status', 'reason', 'requests', 'model_calls',
               'input_tokens', 'output_tokens', 'reserved_output_tokens', 'elapsed',
               'evidence', 'messages', 'pending', 'events', 'usage_complete',
-              'inflight_model', 'diagnostics'}
+              'inflight_model', 'diagnostics', 'submissions', 'finding_finished'}
     config_fields = {'backend', 'model', 'endpoint', 'scenario', 'mode', 'limits',
                      'comparison_version', 'experiment_profile', 'prompt_variant',
                      'initial_messages', 'initial_messages_sha256', 'tools_sha256',
-                     'controls', 'guidance_variant'}
+                     'controls', 'guidance_variant', 'access_contract'}
     if not isinstance(state, dict) or set(state) - fields:
         raise ValueError('Unsupported run fields')
     if not isinstance(state.get('id'), str) or not re.fullmatch(r'[0-9a-f]{12}', state['id']):
@@ -227,6 +227,8 @@ def validate_run(state):
     if any(e != 'Interrupted model call: reservation retained; actual usage unknown.'
            for e in state['events']):
         raise ValueError('Unsupported event detail')
+    from .submission import recheck
+    recheck(state)
     for record in state.get('diagnostics', []):
         validate_diagnostic(record)
         if record.get('model_call', 0) > state['model_calls']:
@@ -257,6 +259,9 @@ def run_result(state):
                   status=state['status'], scenario=scenario, metrics=metrics)
     if state.get('diagnostics'):
         result['diagnostics'] = state['diagnostics']
+    if 'access_contract' in state['config']:
+        from .submission import recheck
+        result['submitted_findings'] = recheck(state)
     return result
 
 

@@ -40,6 +40,12 @@ def investigate(store, state, origin, provider=None):
         return state
     limits = state["config"]["limits"]
     scenario = state["config"].get("scenario", "classic")
+    contract = state['config'].get('access_contract')
+    if contract is not None:
+        from .submission import check_contract
+        check_contract(contract, scenario)
+        if state['config']['backend'] != 'ollama':
+            raise ValueError('Finding submission requires a model backend')
     started = time.monotonic()
     previous_elapsed = state["elapsed"]
 
@@ -71,10 +77,13 @@ def investigate(store, state, origin, provider=None):
     if not state["messages"]:
         state["messages"] = initial_messages(scenario, state["config"].get("prompt_variant", "original"),
                                              state["config"].get("guidance_variant", "standard"))
+        if contract is not None:
+            from .submission import guidance
+            state['messages'].append(guidance(contract))
     save()
     try:
         while True:
-            if state["config"]["backend"] != "baseline" and (discovery_coverage(state["evidence"], scenario) if discovery_scenario(scenario)
+            if contract is None and state["config"]["backend"] != "baseline" and (discovery_coverage(state["evidence"], scenario) if discovery_scenario(scenario)
                     else not missing_checks(state["evidence"])):
                 state["status"] = "completed"
                 state["pending"] = []
@@ -97,7 +106,7 @@ def investigate(store, state, origin, provider=None):
                         save()
                         return state
                 else:
-                    if state["requests"] >= limits["requests"]:
+                    if contract is None and state["requests"] >= limits["requests"]:
                         return stop("Request budget exhausted")
                     if state["model_calls"] >= limits["model_calls"]:
                         return stop("Model-call budget exhausted")
@@ -139,7 +148,9 @@ def investigate(store, state, origin, provider=None):
                         diagnose("provider", "output_budget")
                         return stop("Provider exceeded the requested output-token budget")
                     if not calls:
-                        if discovery_scenario(scenario):
+                        if contract is not None:
+                            content = 'Continue using executed evidence and submit_finding, or explicitly call finish_investigation. No finding is implied by captured coverage.'
+                        elif discovery_scenario(scenario):
                             content = (
                                 "Continue discovery through both accounts' project listings and response links. "
                                 "Use actual probe tool_calls to compare discovered records with both accounts. "
@@ -165,7 +176,7 @@ def investigate(store, state, origin, provider=None):
                         continue
             if remaining() <= 0:
                 return stop("Time budget exhausted")
-            if state["requests"] >= limits["requests"]:
+            if contract is None and state["requests"] >= limits["requests"]:
                 return stop("Request budget exhausted")
             call = state["pending"][0]
             function = call.get("function", {}) if isinstance(call, dict) else {}
@@ -173,12 +184,37 @@ def investigate(store, state, origin, provider=None):
                 diagnose("model", "tool_contract")
                 return stop("Rejected tool call outside the lab contract")
             args = function.get("arguments", {})
+            if contract is not None and function.get('name') in ('submit_finding', 'finish_investigation'):
+                from .findings import evaluate
+                try:
+                    if function['name'] == 'finish_investigation':
+                        if args != {}: raise ValueError('Invalid finish arguments')
+                        validation = {'finished': True}
+                    else:
+                        validation = evaluate(contract, args, state['evidence'])
+                except (ValueError, KeyError, TypeError, AttributeError):
+                    diagnose('model', 'tool_contract')
+                    return stop('Rejected tool call outside the lab contract')
+                if function['name'] == 'submit_finding':
+                    state.setdefault('submissions', []).append(dict(finding=args,
+                        evidence_count=len(state['evidence']), validation=validation))
+                state['pending'].pop(0)
+                reply = dict(role='tool', tool_name=function['name'], content=json.dumps(validation))
+                state['messages'].append(reply)
+                if function['name'] == 'finish_investigation':
+                    state.update(finding_finished=True, status='completed', pending=[])
+                    save()
+                    return state
+                save()
+                continue
             if (function.get("name") != "probe" or not isinstance(args, dict)
                     or set(args) != {"actor", "path"}
                     or not isinstance(args["actor"], str) or not isinstance(args["path"], str)
                     or args["actor"] not in ACTORS or args["path"] not in allowed_paths(scenario)):
                 diagnose("model", "tool_contract")
                 return stop("Rejected tool call outside the lab contract")
+            if state["requests"] >= limits["requests"]:
+                return stop("Request budget exhausted")
             # Reserve first; a crash can consume allowance but cannot create free retries.
             state["requests"] += 1
             save()
