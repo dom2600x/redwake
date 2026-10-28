@@ -57,6 +57,14 @@ release readiness; another broad operational benchmark is not the next step.
 The owner can add Ollama credits if needed. This does not require purchasing credits now
 or establish an unlimited spending allowance. Paid acceptance checks need bounded budgets.
 
+## OpenAI pricing and access
+
+The owner supplied the [official API pricing reference](https://developers.openai.com/api/docs/pricing)
+and confirms that Daybreak cyber models are currently unavailable to this project.
+The [OpenAI pricing notes](openai-pricing.md) record checked rates, cache-write categories,
+context/mode conditions and Responses API implications. Published pricing does not establish
+account entitlement; gated models are not development or release dependencies.
+
 ## Cost accounting requirements
 
 Record usage per call and aggregate by investigation/provider. Use decimal arithmetic
