@@ -7,6 +7,7 @@ from pathlib import Path
 from .lab import MODES, lab
 from .contracts import SCENARIOS, expected_verdicts
 from .providers import Ollama
+from .guidance import discovery_scenario
 from .report import write_report
 from .runner import DEFAULT_LIMITS, DISCOVERY_LIMITS, assess, investigate, score
 from .store import Store
@@ -40,7 +41,7 @@ def main(argv=None):
     evaluate.add_argument("--scenario", choices=SCENARIOS, default="classic")
     evaluate.add_argument("--repeat", type=positive, default=1)
     args = parser.parse_args(argv)
-    default_limits = DISCOVERY_LIMITS if getattr(args, "scenario", "classic") == "discovery" else DEFAULT_LIMITS
+    default_limits = DISCOVERY_LIMITS if discovery_scenario(getattr(args, "scenario", "classic")) else DEFAULT_LIMITS
     Path(args.db).parent.mkdir(parents=True, exist_ok=True)
     try:
         with open(str(args.db) + ".lock", "w") as lock:

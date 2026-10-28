@@ -99,16 +99,17 @@ def stop_category(state):
 
 
 def result_row(state, repetition):
-    verdicts = [r["verdict"] for r in assess(state["evidence"], "discovery")]
+    scenario = state["config"].get("scenario", "discovery")
+    verdicts = [r["verdict"] for r in assess(state["evidence"], scenario)]
     pairs = {(e["actor"], e["path"]) for e in state["evidence"]}
-    resources = resources_for("discovery")
+    resources = resources_for(scenario)
     record_pairs = sum((actor, path) in pairs for path in resources
                        for actor in ("alice", "bob"))
-    row = dict(score(state["evidence"], state["config"]["mode"], "discovery"),
+    row = dict(score(state["evidence"], state["config"]["mode"], scenario),
                 run_id=state["id"], repeat=repetition, model=state["config"]["model"],
                 mode=state["config"]["mode"], status=state["status"], reason=state.get("reason"),
                 correct_run=state["status"] == "completed" and verdicts == expected_verdicts(
-                    state["config"]["mode"], "discovery"), verdicts=verdicts,
+                    state["config"]["mode"], scenario), verdicts=verdicts,
                 record_pairs=record_pairs, requests=state["requests"], model_calls=state["model_calls"],
                 input_tokens=state["input_tokens"], output_tokens=state["output_tokens"],
                 reserved_output_tokens=state["reserved_output_tokens"],

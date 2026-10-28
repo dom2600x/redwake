@@ -4,7 +4,7 @@ import http.client
 import json
 import os
 import urllib.error
-from .guidance import ACTOR_NAMES, API_GUIDANCE
+from .guidance import ACTOR_NAMES, API_GUIDANCE, discovery_scenario
 from .transport import ResponseFormatError, request_json
 
 
@@ -84,9 +84,9 @@ TOOLS = [{"type": "function", "function": {
 def initial_messages(scenario="classic", prompt_variant="original"):
     if prompt_variant not in ("original", "batching"):
         raise ValueError("Unknown prompt variant")
-    if prompt_variant == "batching" and scenario != "discovery":
+    if prompt_variant == "batching" and not discovery_scenario(scenario):
         raise ValueError("Batching guidance requires the discovery scenario")
-    guidance = (API_GUIDANCE if scenario == "discovery" else
+    guidance = (API_GUIDANCE if discovery_scenario(scenario) else
                 "Test /api/documents/101, /api/invoices/inv_b7 and /api/documents/public "
                 "with alice and bob. Inspect returned content and use owner controls.")
     if prompt_variant == "batching":

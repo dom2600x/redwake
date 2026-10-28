@@ -1,6 +1,13 @@
 """Public API documentation, independent of verifier fixtures."""
 
 ACTOR_NAMES = ("alice", "bob")
+DISCOVERY_SCENARIOS = ("discovery", "discovery_ids", "discovery_links")
+
+
+def discovery_scenario(scenario):
+    return scenario in DISCOVERY_SCENARIOS
+
+
 API_GUIDANCE = """Two test accounts, alice and bob, are available through probe(actor, path).
 GET /api/projects lists the current account's projects. Project responses link to
 record collections. Collections link to record details; details may link to files

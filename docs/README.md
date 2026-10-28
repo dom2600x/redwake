@@ -20,6 +20,8 @@ The [provider compatibility experiment](provider-compatibility.md) isolates fres
 tool-call prompts and saved failure contexts from live investigation.
 The [transcript experiment](transcript-experiment.md) tests declared reductions
 and tool-result correlation with a direct native API cross-check.
+The [varied discovery suite](varied-discovery.md) rotates profiles across ID and
+navigation variants while retaining the same access cases and allowances.
 
 ## Design and roadmap
 

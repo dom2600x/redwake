@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from redwake.comparison import MODELS, MODES, aggregate, result_row
 from redwake.lab import ACTORS, allowed_paths
+from redwake.guidance import discovery_scenario
 from redwake.providers import DIAGNOSTIC_CATEGORIES, validate_diagnostic
 from redwake.verifier import assess, score
 from scripts.verify_experiments import verify_bundle
@@ -74,7 +75,8 @@ def validate_state(state, batch):
     config = state["config"]
     known_fields(config, CONFIG_FIELDS)
     model = config["model"]
-    if (config["scenario"] != "discovery" or config["mode"] not in MODES
+    if (not discovery_scenario(config["scenario"]) or config["mode"] not in MODES
+            or ('scenario' in batch and config['scenario'] != batch['scenario'])
             or model not in ("baseline",) + MODELS
             or config["backend"] != ("baseline" if model == "baseline" else "ollama")
             or config.get("endpoint") != batch["endpoint"] or config["limits"] != batch["limits"]):
@@ -106,7 +108,7 @@ def validate_state(state, batch):
     for index, evidence in enumerate(state["evidence"], 1):
         if (set(evidence) != {"id", "actor", "path", "status", "body"}
                 or evidence["id"] != index or evidence["actor"] not in ACTORS
-                or evidence["path"] not in allowed_paths("discovery")
+                or evidence["path"] not in allowed_paths(config["scenario"])
                 or type(evidence["status"]) is not int or not 100 <= evidence["status"] <= 599):
             raise ValueError("Evidence outside synthetic lab contract")
     if not isinstance(state["events"], list) or any(
@@ -122,6 +124,12 @@ def validate_state(state, batch):
 
 
 def validate_batch(batch, states):
+    if batch.get('suite_version') == 1:
+        from redwake.discovery_suite import verify_comparison
+        ids = verify_comparison(batch, states)
+        for state in states.values():
+            validate_state(state, dict(endpoint=batch['endpoint'], limits=state['config']['limits']))
+        return ids
     known_fields(batch, BATCH_FIELDS)
     if (batch["scenario"] != "discovery" or batch["endpoint"] not in
             ("https://ollama.com", "http://127.0.0.1:11434")
@@ -177,11 +185,11 @@ def validate_batch(batch, states):
 
 def rechecked_row(state):
     config = state["config"]
-    row = dict(score(state["evidence"], config["mode"], "discovery"),
+    row = dict(score(state["evidence"], config["mode"], config["scenario"]),
                run_id=state["id"], backend=config["backend"], model=config["model"],
-               scenario="discovery", mode=config["mode"], status=state["status"],
+               scenario=config["scenario"], mode=config["mode"], status=state["status"],
                reason=state.get("reason"), limits=config["limits"], seconds=state["elapsed"],
-               results=assess(state["evidence"], "discovery"))
+               results=assess(state["evidence"], config["scenario"]))
     row.update({key: state[key] for key in ACCOUNTING})
     if state.get("diagnostics"):
         row["diagnostics"] = state["diagnostics"]
@@ -244,7 +252,7 @@ def export_bundle(source, destination, report):
                     "correct_findings", "missed_flaws", "false_positives", "correct_verdicts", "inconclusive",
                     "requests", "model_calls", "input_tokens", "output_tokens", "seconds", "usage_complete")}
                 expected_result = dict(run_id=run_id, results=row["results"], status=row["status"],
-                                       scenario="discovery", metrics=metrics)
+                                       scenario=state['config']['scenario'], metrics=metrics)
                 if state.get("diagnostics"):
                     expected_result["diagnostics"] = state["diagnostics"]
                 if (json.loads(artifacts[prefix + "result.json"]) != expected_result
