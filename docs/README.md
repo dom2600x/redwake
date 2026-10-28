@@ -27,6 +27,7 @@ graphs with graph-aware guidance and repeated within-condition order balance.
 
 ## Design and roadmap
 
+- [Current project decisions](project-decisions.md): delivery direction, security acceptance, model usage, cost accounting and user-supplied Ollama pricing/quota information.
 - [Roadmap](roadmap.md): the canonical next steps and their dependencies.
 - [Initial engineering decisions](decisions.md): the dated 2026-10-10 classic-lab design; the discovery guide describes the current model guidance.
 
