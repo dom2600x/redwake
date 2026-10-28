@@ -11,7 +11,7 @@ from .transport import ResponseFormatError, request_json
 DIAGNOSTIC_CATEGORIES = {
     "provider": frozenset({"http_auth", "http_rate_limit", "http_server", "http_other",
                            "timeout", "network", "response_parse", "response_protocol",
-                           "inference_error", "interrupted", "output_budget", "unknown"}),
+                           "inference_error", "inference_incomplete", "interrupted", "output_budget", "unknown"}),
     "model": frozenset({"tool_contract", "tool_batch"}),
     "harness": frozenset({"unknown"}),
 }

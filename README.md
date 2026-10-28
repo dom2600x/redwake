@@ -60,7 +60,7 @@ Use `demo --backend ollama --contract CONTRACT.json` to enable model submission 
 validation feedback. These runs require an explicit finish and retain accepted/rejected
 claims separately from fixture scores.
 
-## Optional model backend
+## Optional model backends
 
 Set `OLLAMA_API_KEY` in your environment using an Ollama API key, then run:
 
@@ -72,6 +72,11 @@ python3 -m redwake demo --backend ollama --model nemotron-3-super
 Model identifiers and account access must be confirmed with Ollama. Cloud requests use `https://ollama.com/api/chat`; the adapter follows the official [cloud API](https://docs.ollama.com/cloud), [chat reference](https://docs.ollama.com/api/chat) and [tool-calling contract](https://docs.ollama.com/capabilities/tool-calling). Only synthetic lab observations and the model conversation are sent. Credentials are read from the environment and are not written to run state.
 
 Cloud calls inherit standard environment proxy settings (`HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`) and Python's configured CA trust, with TLS verification enabled. This supports managed cloud environments that require an outbound proxy. Lab probes and local Ollama calls always connect directly, without inheriting proxies.
+
+Direct OpenAI Responses API support is also available with `OPENAI_API_KEY` and an
+explicit `--model`. It supports the same bounded probes and finding submissions. See the
+[OpenAI provider guide](docs/openai-provider.md) for usage accounting, resume and pricing
+limitations. Adapter support does not establish model security capability.
 
 A running local Ollama server is also supported:
 
@@ -105,7 +110,8 @@ The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment
 - `contracts.py`, `verifier.py`: private fixture truth, evidence validation and scoring.
 - `transport.py`: bounded JSON requests and scope enforcement.
 - `runner.py`: baseline/model execution, discovery traversal and usage reservations.
-- `providers.py`: Ollama adapter and tool schema.
+- `providers.py`, `openai.py`: provider adapters and tool schemas.
+- `usage.py`, `costs.py`: per-call usage records and rate-card valuation.
 - `store.py`: SQLite checkpoints.
 - `report.py`: Markdown and JSON artifacts.
 - `artifacts.py`: portable investigation export and shared offline verification.
@@ -131,6 +137,6 @@ question and a decision that cannot be made with deterministic tests or retained
 
 ## Current limitations
 
-This is a lab harness, not a general penetration-testing product. It does not yet support external targets, arbitrary access contracts, container isolation, mutation testing, monetary accounting or proof of model capability. The lab runs in a local Python thread with synthetic data and is not a container sandbox.
+This is a lab harness, not a general penetration-testing product. It does not yet support external targets, arbitrary access contracts, container isolation, mutation testing, provider-reconciled billing or proof of model capability. The lab runs in a local Python thread with synthetic data and is not a container sandbox.
 
 See the [roadmap](docs/roadmap.md) for planned work.

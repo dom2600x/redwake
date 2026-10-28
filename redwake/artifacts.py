@@ -171,11 +171,11 @@ def validate_run(state):
     fields = {'id', 'config', 'status', 'reason', 'requests', 'model_calls',
               'input_tokens', 'output_tokens', 'reserved_output_tokens', 'elapsed',
               'evidence', 'messages', 'pending', 'events', 'usage_complete',
-              'inflight_model', 'diagnostics', 'submissions', 'finding_finished', 'cost_ledger'}
+              'inflight_model', 'diagnostics', 'submissions', 'finding_finished', 'cost_ledger', 'usage_ledger'}
     config_fields = {'backend', 'model', 'endpoint', 'scenario', 'mode', 'limits',
                      'comparison_version', 'experiment_profile', 'prompt_variant',
                      'initial_messages', 'initial_messages_sha256', 'tools_sha256',
-                     'controls', 'guidance_variant', 'access_contract', 'cost_policy'}
+                     'controls', 'guidance_variant', 'access_contract', 'cost_policy', 'usage_version'}
     if not isinstance(state, dict) or set(state) - fields:
         raise ValueError('Unsupported run fields')
     if not isinstance(state.get('id'), str) or not re.fullmatch(r'[0-9a-f]{12}', state['id']):
@@ -185,8 +185,9 @@ def validate_run(state):
         raise ValueError('Unsupported run configuration')
     scenario = config.get('scenario', 'classic')
     if (scenario not in SCENARIOS or config.get('mode') not in MODES
-            or config.get('backend') not in ('baseline', 'ollama')
-            or config.get('endpoint') not in (None, 'https://ollama.com', 'http://127.0.0.1:11434')):
+            or config.get('backend') not in ('baseline', 'ollama', 'openai')
+            or config.get('endpoint') not in (('https://api.openai.com',) if config.get('backend') == 'openai'
+                                            else (None, 'https://ollama.com', 'http://127.0.0.1:11434'))):
         raise ValueError('Unsupported lab configuration')
     if state['status'] not in ('completed', 'stopped') or state.get('inflight_model'):
         raise ValueError('Run is active; finish or interrupt it before export')
@@ -229,6 +230,8 @@ def validate_run(state):
         raise ValueError('Unsupported event detail')
     from .costs import recheck as recheck_costs
     recheck_costs(state)
+    from .usage import recheck as recheck_usage
+    recheck_usage(state)
     from .submission import recheck
     recheck(state)
     for record in state.get('diagnostics', []):
@@ -267,6 +270,9 @@ def run_result(state):
     if 'cost_policy' in state['config']:
         from .costs import recheck
         result['cost'] = recheck(state)
+    if 'usage_version' in state['config']:
+        from .usage import recheck
+        result['provider_usage'] = recheck(state)
     return result
 
 

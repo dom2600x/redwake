@@ -183,3 +183,18 @@ verified Redwake guarantees or promises applicable to every future backend.
 Open questions: provider cache-usage fields, authoritative credit reconciliation,
 free-tier reset/limits and enforceable free-only controls. Resolve these through supported
 documentation/interfaces when needed, rather than spending calls to infer quotas.
+
+
+## Direct-provider implementation milestone
+
+The first frontier integration uses OpenAI's Responses API, with an explicit model choice
+and deterministic mocked acceptance tests. It preserves tool-call IDs and encrypted
+reasoning replay across resume. New CLI model runs have a versioned per-call usage
+ledger independent of pricing, retaining cached-input/reasoning subsets and unknown calls.
+Historical artifacts remain unchanged. No live inference is needed to implement this.
+
+Ollama flat-rate valuation remains available. OpenAI valuation is deferred until its
+context/cache/tier rules are implemented, rather than applying an incomplete flat-rate
+card. Anthropic follows after the first direct-provider path is complete. Daybreak and
+Mythos access restrictions remain in effect. Neither adapter support nor tool protocol
+tests select a model for its security-analysis capability.

@@ -68,6 +68,12 @@ def write_report(state, directory):
         report += ['## Usage valuation', '',
                    'Rate-card value is separate from cash billing. Input reservations and budget limits are estimates, not provider-enforced spending caps.',
                    '', '```json', json.dumps(cost, indent=2), '```', '']
+    if 'usage_version' in state['config']:
+        from .usage import recheck as recheck_usage
+        provider_usage = recheck_usage(state)
+        report += ['## Provider usage ledger', '',
+                   'Cached input and reasoning are subsets of input and output totals. Null means unknown. These records are not provider-reconciled billing.',
+                   '', '```json', json.dumps(provider_usage, indent=2), '```', '']
     (directory / "report.md").write_text("\n".join(report))
     (directory / "evidence.json").write_text(json.dumps(state["evidence"], indent=2) + "\n")
     result = {"run_id": state["id"], "results": results, "status": state["status"],
@@ -78,5 +84,7 @@ def write_report(state, directory):
         result['submitted_findings'] = submissions
     if 'cost_policy' in state['config']:
         result['cost'] = cost
+    if 'usage_version' in state['config']:
+        result['provider_usage'] = provider_usage
     (directory / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     return directory / "report.md"
