@@ -3,7 +3,9 @@
 The first implementation is opt-in for Ollama Cloud. A run snapshots a flat USD rate
 card and billing context, then saves one ledger entry per model call. Historical runs
 and comparison profiles keep their original format and receive no retrospective charges.
-Direct OpenAI/Anthropic adapters and their cache-write/tier rules are not implemented here.
+The [OpenAI adapter](openai-provider.md) now records normalized usage independently of
+pricing. Monetary valuation for OpenAI, its cache-write/tier rules, and a direct Anthropic
+adapter remain unimplemented.
 
 ```sh
 python3 -m redwake demo --backend ollama --model nemotron-3-ultra \

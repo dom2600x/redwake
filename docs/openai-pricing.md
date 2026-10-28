@@ -30,8 +30,8 @@ must not be assumed to apply to Azure or Bedrock billing.
 ## Model-specific conditions
 
 The [GPT-6.1 Sol reference](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
-requires the Responses API for tool calling. The future adapter must not assume that
-an Ollama-style chat request can be reused unchanged.
+requires the Responses API for tool calling. The [implemented adapter](openai-provider.md) uses the Responses API; it does not
+reuse an Ollama-style chat request. Monetary valuation remains unsupported.
 
 For Sol, that reference states that requests above 272,000 input tokens multiply input
 and cache rates by two and output rates by 1.5 for the entire request. It also documents

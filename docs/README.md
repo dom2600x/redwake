@@ -29,7 +29,8 @@ See [submitted findings](submitted-findings.md) for declared access rules, evide
 claim validation and portable acceptance/rejection proofs.
 
 See [cost accounting](cost-accounting.md) for per-call usage, rate snapshots and estimated
-budget controls.
+budget controls. See the [OpenAI provider guide](openai-provider.md) for direct
+Responses API execution and normalized usage.
 
 ## Design and roadmap
 
