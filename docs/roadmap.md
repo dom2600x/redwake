@@ -85,3 +85,7 @@ External APIs would require user-supplied access contracts, explicit target and 
 handling, suitable evidence matching and scope enforcement. Those are product requirements
 for a later release and must be designed and implemented directly. More synthetic model
 comparisons do not implement them or substitute for their acceptance tests.
+
+The submitted-finding foundation now provides offline policy/claim validation and portable
+proofs; see [the guide](submitted-findings.md). Model-loop submission remains the next
+integration task. The historical fixture scores remain separate from submitted claims.

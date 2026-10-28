@@ -25,6 +25,9 @@ navigation variants while retaining the same access cases and allowances.
 The [counterbalanced topology suite](topology-suite.md) adds deeper and branching
 graphs with graph-aware guidance and repeated within-condition order balance.
 
+See [submitted findings](submitted-findings.md) for declared access rules, evidence-backed
+claim validation and portable acceptance/rejection proofs.
+
 ## Design and roadmap
 
 - [Current project decisions](project-decisions.md): delivery direction, security acceptance, model usage, cost accounting and user-supplied Ollama pricing/quota information.
