@@ -68,7 +68,7 @@ def score(evidence, mode, scenario="classic"):
     }
 
 
-def discovery_coverage(evidence):
+def discovery_coverage(evidence, scenario="discovery"):
     """Coverage means attempted account pairs, not successful access or security."""
     observed = {(e["actor"], e["path"]) for e in evidence}
-    return all((actor, path) in observed for path in resources_for("discovery") for actor in ACTOR_NAMES)
+    return all((actor, path) in observed for path in resources_for(scenario) for actor in ACTOR_NAMES)

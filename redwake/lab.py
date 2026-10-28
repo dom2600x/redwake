@@ -5,7 +5,8 @@ import threading
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from .contracts import RESOURCES, resources_for
+from .contracts import RESOURCES, resources_for, discovery_layout
+from .guidance import discovery_scenario
 
 
 ACTORS = {"alice": "lab-alice", "bob": "lab-bob"}
@@ -19,14 +20,17 @@ def lab(mode="fixed", scenario="classic"):
         raise ValueError("Unknown lab mode")
 
     resources = resources_for(scenario)
-    projects = {"alice": "prj_a5", "bob": "prj_b9"}
+    layout = discovery_layout(scenario if discovery_scenario(scenario) else "discovery")
+    projects = layout["projects"]
+    collection_paths = layout["collection_paths"]
+    record_paths = list(resources)
     collections = {
-        "alice": ["/api/records/doc_k4", "/api/records/guide_h6"],
-        "bob": ["/api/records/inv_m8", "/api/records/note_q2", "/api/exports/export_z3"],
+        "alice": [record_paths[0], record_paths[4]] if discovery_scenario(scenario) else [],
+        "bob": [record_paths[2], record_paths[3], record_paths[5]] if discovery_scenario(scenario) else [],
     }
     navigation = {"/api/projects"}
-    for project in projects.values():
-        navigation.update({"/api/projects/" + project, "/api/projects/" + project + "/records"})
+    for actor, project in projects.items():
+        navigation.update({"/api/projects/" + project, collection_paths[actor]})
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -36,20 +40,20 @@ def lab(mode="fixed", scenario="classic"):
             behaviour = record.get("behaviour", mode) if record else mode
             if actor is None:
                 status, body = 401, {"error": "unauthenticated"}
-            elif scenario == "discovery" and self.path in navigation:
+            elif discovery_scenario(scenario) and self.path in navigation:
                 if mode == "broken":
                     status, body = 503, {"error": "unavailable"}
                 elif self.path == "/api/projects":
                     status, body = 200, {"projects": [{"id": projects[actor], "links": {
                         "self": "/api/projects/" + projects[actor]}}]}
-                elif not self.path.startswith("/api/projects/" + projects[actor]):
+                elif self.path not in {"/api/projects/" + projects[actor], collection_paths[actor]}:
                     status, body = 404, {"error": "not found"}
-                elif self.path.endswith("/records"):
+                elif self.path == collection_paths[actor]:
                     status, body = 200, {"records": [{"links": {"self": path}}
                                                    for path in collections[actor]]}
                 else:
                     status, body = 200, {"id": projects[actor], "links": {
-                        "records": self.path + "/records"}}
+                        "records": collection_paths[actor]}}
             elif record is None:
                 status, body = 404, {"error": "not found"}
             elif mode == "broken" or behaviour == "broken":
@@ -59,10 +63,10 @@ def lab(mode="fixed", scenario="classic"):
                 body = {"error": "denied"}
             else:
                 status, body = 200, {"owner": record["owner"], "data": record["marker"]}
-                if scenario == "discovery":
+                if discovery_scenario(scenario):
                     body["visibility"] = "private" if record["private"] else "public"
-                    if self.path == "/api/records/doc_k4":
-                        body["links"] = {"attachment": "/api/files/file_x9"}
+                    if self.path == record_paths[0]:
+                        body["links"] = {"attachment": record_paths[1]}
             payload = json.dumps(body).encode()
             self.send_response(status)
             self.send_header("Content-Type", "application/json")
@@ -86,8 +90,9 @@ def lab(mode="fixed", scenario="classic"):
 
 def allowed_paths(scenario="classic"):
     paths = set(resources_for(scenario))
-    if scenario == "discovery":
+    if discovery_scenario(scenario):
         paths.add("/api/projects")
-        for project in ("prj_a5", "prj_b9"):
-            paths.update({"/api/projects/" + project, "/api/projects/" + project + "/records"})
+        layout = discovery_layout(scenario)
+        for actor, project in layout["projects"].items():
+            paths.update({"/api/projects/" + project, layout["collection_paths"][actor]})
     return paths

@@ -119,14 +119,22 @@ def verify_bundle(directory):
                 raise ValueError("Baseline evaluation mismatch")
     comparison = directory / "comparison.json"
     if comparison.exists():
-        from redwake.comparison import aggregate, result_row
         batch = json.loads(comparison.read_text())
-        if [r["run_id"] for r in batch["rows"]] != ids or batch["summary"] != aggregate(batch["rows"]):
-            raise ValueError("Comparison summary mismatch")
-        for row in batch["rows"]:
-            if row != result_row(by_id[row["run_id"]], row["repeat"]):
-                raise ValueError("Comparison row mismatch")
-        verify_comparison_controls(batch, by_id)
+        if 'suite_version' in batch and batch['suite_version'] != 1:
+            raise ValueError('Unsupported discovery suite version')
+        if [r['run_id'] for r in batch['rows']] != ids:
+            raise ValueError('Comparison run inventory mismatch')
+        if batch.get('suite_version') == 1:
+            from redwake.discovery_suite import verify_comparison
+            verify_comparison(batch, by_id)
+        else:
+            from redwake.comparison import aggregate, result_row
+            if batch["summary"] != aggregate(batch["rows"]):
+                raise ValueError("Comparison summary mismatch")
+            for row in batch["rows"]:
+                if row != result_row(by_id[row["run_id"]], row["repeat"]):
+                    raise ValueError("Comparison row mismatch")
+            verify_comparison_controls(batch, by_id)
     return {"bundle": directory.name, "runs": len(ids), "files": len(expected_files)}
 
 

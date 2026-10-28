@@ -5,7 +5,7 @@ import time
 from .lab import ACTORS, allowed_paths
 from .contracts import RESOURCES
 from .verifier import assess, missing_checks, score, discovery_coverage
-from .guidance import response_links
+from .guidance import response_links, discovery_scenario
 from .providers import ProviderError, initial_messages, provider_failure, validate_diagnostic
 from .transport import probe
 
@@ -73,7 +73,7 @@ def investigate(store, state, origin, provider=None):
     save()
     try:
         while True:
-            if state["config"]["backend"] != "baseline" and (discovery_coverage(state["evidence"]) if scenario == "discovery"
+            if state["config"]["backend"] != "baseline" and (discovery_coverage(state["evidence"], scenario) if discovery_scenario(scenario)
                     else not missing_checks(state["evidence"])):
                 state["status"] = "completed"
                 state["pending"] = []
@@ -83,7 +83,7 @@ def investigate(store, state, origin, provider=None):
                 return stop("Time budget exhausted")
             if not state["pending"]:
                 if state["config"]["backend"] == "baseline":
-                    if scenario == "discovery":
+                    if discovery_scenario(scenario):
                         checks = discovery_checks(state["evidence"])
                     else:
                         observed = {(e["actor"], e["path"]) for e in state["evidence"]}
@@ -138,7 +138,7 @@ def investigate(store, state, origin, provider=None):
                         diagnose("provider", "output_budget")
                         return stop("Provider exceeded the requested output-token budget")
                     if not calls:
-                        if scenario == "discovery":
+                        if discovery_scenario(scenario):
                             content = (
                                 "Continue discovery through both accounts' project listings and response links. "
                                 "Use actual probe tool_calls to compare discovered records with both accounts. "

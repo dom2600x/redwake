@@ -27,11 +27,15 @@ to those reports and their retained evidence.
   retains 48 calls and 48 controls across adapter/native request construction.
   The original control no longer reproduced HTTP 500 in that sample; no field
   removal or correlation workaround is credited with fixing it.
+- A [varied-discovery pilot](experiments/2026-10-28-varied-discovery/report.md)
+  retains 72 runs with rotating profile order, renamed IDs and opaque collection
+  URLs. Access semantics and scripted traversal length stay fixed.
 
 ## Next experiments
 
-1. Rotate profile order across repeated blocks and add navigation layouts or
-   fixture IDs before drawing broader conclusions about model capability.
+1. Repeat the varied suite with within-condition order counterbalancing and more
+   independent navigation topologies before broader capability claims. The pilot
+   has one run per model/profile/fixture/mode; URL shape is not graph topology.
 2. Re-establish a failing original provider control before further minimisation.
    Prefer a stable provider version or safe trace identifier when available;
    preserve both the historical failures and later non-reproduction.

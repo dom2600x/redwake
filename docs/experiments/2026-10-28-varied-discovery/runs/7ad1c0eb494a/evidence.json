@@ -1,0 +1,226 @@
+[
+  {
+    "actor": "alice",
+    "path": "/api/projects",
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "prj_c7",
+          "links": {
+            "self": "/api/projects/prj_c7"
+          }
+        }
+      ]
+    },
+    "id": 1
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects",
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "prj_d2",
+          "links": {
+            "self": "/api/projects/prj_d2"
+          }
+        }
+      ]
+    },
+    "id": 2
+  },
+  {
+    "actor": "alice",
+    "path": "/api/projects/prj_c7",
+    "status": 200,
+    "body": {
+      "id": "prj_c7",
+      "links": {
+        "records": "/api/projects/prj_c7/records"
+      }
+    },
+    "id": 3
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects/prj_d2",
+    "status": 200,
+    "body": {
+      "id": "prj_d2",
+      "links": {
+        "records": "/api/projects/prj_d2/records"
+      }
+    },
+    "id": 4
+  },
+  {
+    "actor": "alice",
+    "path": "/api/projects/prj_c7/records",
+    "status": 200,
+    "body": {
+      "records": [
+        {
+          "links": {
+            "self": "/api/records/doc_r8"
+          }
+        },
+        {
+          "links": {
+            "self": "/api/records/guide_w6"
+          }
+        }
+      ]
+    },
+    "id": 5
+  },
+  {
+    "actor": "bob",
+    "path": "/api/projects/prj_d2/records",
+    "status": 200,
+    "body": {
+      "records": [
+        {
+          "links": {
+            "self": "/api/records/inv_s3"
+          }
+        },
+        {
+          "links": {
+            "self": "/api/records/note_v1"
+          }
+        },
+        {
+          "links": {
+            "self": "/api/exports/export_y5"
+          }
+        }
+      ]
+    },
+    "id": 6
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/doc_r8",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "quarterly-draft",
+      "visibility": "private",
+      "links": {
+        "attachment": "/api/files/file_t4"
+      }
+    },
+    "id": 7
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/guide_w6",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "team-handbook",
+      "visibility": "public"
+    },
+    "id": 8
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/inv_s3",
+    "status": 200,
+    "body": {
+      "owner": "bob",
+      "data": "supplier-invoice",
+      "visibility": "private"
+    },
+    "id": 9
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/note_v1",
+    "status": 200,
+    "body": {
+      "owner": "bob",
+      "data": "planning-note",
+      "visibility": "private"
+    },
+    "id": 10
+  },
+  {
+    "actor": "bob",
+    "path": "/api/exports/export_y5",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 11
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/doc_r8",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 12
+  },
+  {
+    "actor": "bob",
+    "path": "/api/records/guide_w6",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "team-handbook",
+      "visibility": "public"
+    },
+    "id": 13
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/inv_s3",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 14
+  },
+  {
+    "actor": "alice",
+    "path": "/api/records/note_v1",
+    "status": 404,
+    "body": {
+      "error": "denied"
+    },
+    "id": 15
+  },
+  {
+    "actor": "alice",
+    "path": "/api/files/file_t4",
+    "status": 200,
+    "body": {
+      "owner": "alice",
+      "data": "draft-attachment",
+      "visibility": "private"
+    },
+    "id": 16
+  },
+  {
+    "actor": "bob",
+    "path": "/api/files/file_t4",
+    "status": 403,
+    "body": {
+      "error": "denied"
+    },
+    "id": 17
+  },
+  {
+    "actor": "alice",
+    "path": "/api/exports/export_y5",
+    "status": 503,
+    "body": {
+      "error": "unavailable"
+    },
+    "id": 18
+  }
+]
