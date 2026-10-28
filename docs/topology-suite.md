@@ -1,5 +1,8 @@
 # Counterbalanced topology suite
 
+The [October 28 study report](experiments/2026-10-28-topology-study/report.md)
+retains all 216 planned investigations and their limitations.
+
 ```sh
 python3 -m redwake.discovery_suite --topologies --repeat 3 --directory .redwake/topology-study
 ```
