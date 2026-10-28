@@ -18,6 +18,8 @@ See also the [comparison method](comparison-method.md) for fixed profiles and di
 
 The [provider compatibility experiment](provider-compatibility.md) isolates fresh
 tool-call prompts and saved failure contexts from live investigation.
+The [transcript experiment](transcript-experiment.md) tests declared reductions
+and tool-result correlation with a direct native API cross-check.
 
 ## Design and roadmap
 

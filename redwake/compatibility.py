@@ -140,45 +140,48 @@ def verify_data(data):
     if len(data['rows']) != len(expected):
         raise ValueError('Incomplete compatibility plan')
     for row, slot in zip(data['rows'], expected):
-        allowed = set(slot) | {'status', 'calls_reserved', 'output_reserved', 'input_tokens',
-                              'output_tokens', 'usage_complete', 'seconds', 'message',
-                              'result', 'done_reason', 'diagnostic'}
-        if set(row) - allowed or type(row['usage_complete']) is not bool:
-            raise ValueError('Invalid trial schema')
-        if (type(row['seconds']) not in (int, float) or not math.isfinite(row['seconds'])
-                or row['seconds'] < 0):
-            raise ValueError('Invalid elapsed time')
-        if any(row[k] != v for k, v in slot.items()):
-            raise ValueError('Compatibility trial differs from plan')
-        baseline = slot['backend'] == 'baseline'
-        if (row['calls_reserved'] != (0 if baseline else 1)
-                or row['output_reserved'] != (0 if baseline else slot['capacity'])):
-            raise ValueError('Reservation mismatch')
-        if row['status'] == 'failed':
-            validate_diagnostic(row['diagnostic'])
-            if (baseline or row['usage_complete'] or row['result'] != 'provider_failure'
-                    or 'message' in row or row['diagnostic']['source'] != 'provider'
-                    or row['diagnostic'].get('model_call') != 1):
-                raise ValueError('Invalid failure accounting')
-        elif row['status'] == 'returned':
-            message = row['message']
-            if (not isinstance(message, dict) or message.get('role') != 'assistant'
-                    or set(message) - {'role', 'content', 'thinking', 'tool_calls'}
-                    or 'diagnostic' in row
-                    or row['done_reason'] not in ('stop', 'length', 'load', 'unload', 'unknown')):
-                raise ValueError('Invalid returned message')
-            case = data['inputs'][slot['model']][slot['case']]
-            if row['result'] != classify(row['message'], slot['case'], case['baseline']):
-                raise ValueError('Compatibility classification mismatch')
-            if baseline and (not row['usage_complete'] or row['input_tokens'] or row['output_tokens']
-                             or row['result'] != ('in_scope' if slot['case'] == 'replay' else 'matched')):
-                raise ValueError('Scripted control did not match')
-        else:
-            raise ValueError('Unfinished compatibility trial')
-        for key in ('input_tokens', 'output_tokens'):
-            if type(row[key]) is not int or row[key] < 0:
-                raise ValueError('Invalid returned accounting')
+        verify_trial(row, slot, data['inputs'][slot['model']][slot['case']])
     return len(expected)
+
+
+def verify_trial(row, slot, case):
+    allowed = set(slot) | {'status', 'calls_reserved', 'output_reserved', 'input_tokens',
+                          'output_tokens', 'usage_complete', 'seconds', 'message',
+                          'result', 'done_reason', 'diagnostic'}
+    if set(row) - allowed or type(row['usage_complete']) is not bool:
+        raise ValueError('Invalid trial schema')
+    if (type(row['seconds']) not in (int, float) or not math.isfinite(row['seconds'])
+            or row['seconds'] < 0):
+        raise ValueError('Invalid elapsed time')
+    if any(row[k] != v for k, v in slot.items()):
+        raise ValueError('Compatibility trial differs from plan')
+    baseline = slot['backend'] == 'baseline'
+    if (row['calls_reserved'] != (0 if baseline else 1)
+            or row['output_reserved'] != (0 if baseline else slot['capacity'])):
+        raise ValueError('Reservation mismatch')
+    if row['status'] == 'failed':
+        validate_diagnostic(row['diagnostic'])
+        if (baseline or row['usage_complete'] or row['result'] != 'provider_failure'
+                or 'message' in row or row['diagnostic']['source'] != 'provider'
+                or row['diagnostic'].get('model_call') != 1):
+            raise ValueError('Invalid failure accounting')
+    elif row['status'] == 'returned':
+        message = row['message']
+        if (not isinstance(message, dict) or message.get('role') != 'assistant'
+                or set(message) - {'role', 'content', 'thinking', 'tool_calls'}
+                or 'diagnostic' in row
+                or row['done_reason'] not in ('stop', 'length', 'load', 'unload', 'unknown')):
+            raise ValueError('Invalid returned message')
+        if row['result'] != classify(row['message'], slot['case'], case['baseline']):
+            raise ValueError('Compatibility classification mismatch')
+        if baseline and (not row['usage_complete'] or row['input_tokens'] or row['output_tokens']
+                         or row['result'] != ('in_scope' if slot['case'] == 'replay' else 'matched')):
+            raise ValueError('Scripted control did not match')
+    else:
+        raise ValueError('Unfinished compatibility trial')
+    for key in ('input_tokens', 'output_tokens'):
+        if type(row[key]) is not int or row[key] < 0:
+            raise ValueError('Invalid returned accounting')
 
 
 def verify_bundle(directory):

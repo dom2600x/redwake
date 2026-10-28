@@ -47,6 +47,9 @@ def verify_comparison_controls(batch, states):
 def verify_bundle(directory):
     directory = Path(directory)
     manifest = json.loads((directory / "manifest.json").read_text())
+    if manifest.get('schema_version') == 2 and manifest.get('kind') == 'transcript_reduction':
+        from redwake.transcript_experiment import verify_bundle as verify_transcript
+        return verify_transcript(directory)
     if manifest.get('schema_version') == 2 and manifest.get('kind') == 'provider_compatibility':
         from redwake.compatibility import verify_bundle as verify_compatibility
         return verify_compatibility(directory)
