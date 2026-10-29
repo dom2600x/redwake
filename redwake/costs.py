@@ -64,7 +64,7 @@ def summary(state):
         else:
             known += value(outputs, card['output']); upper += value(outputs, card['output'])
         minimum += known
-        exposure += max(known, money(entry['reservation_usd'])) if not complete else upper
+        exposure += max(upper, money(entry['reservation_usd'])) if not complete else upper
         exact = exact and complete and known == upper
     return dict(currency='USD', billing_context=policy['billing_context'],
                 calculated_usage_value_usd=str(minimum) if exact else None,
