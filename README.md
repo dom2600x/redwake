@@ -122,7 +122,7 @@ The CLI takes an exclusive database lock to prevent concurrent writers from reus
 
 ## Usage and cost accounting
 
-Use `--pricing RATE_CARD.json` with an Ollama Cloud demo to retain a per-call usage ledger
+Use `--pricing RATE_CARD.json` with an Ollama Cloud or direct OpenAI demo to retain a per-call usage ledger
 and decimal rate-card valuations. `--billing-context` records free/included/purchased/unknown
 usage; `--max-cost-usd` gates estimated usage value, not actual provider cash charges.
 See [cost accounting](docs/cost-accounting.md) for examples, unknown usage and limitations.

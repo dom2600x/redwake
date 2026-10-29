@@ -31,7 +31,8 @@ must not be assumed to apply to Azure or Bedrock billing.
 
 The [GPT-6.1 Sol reference](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
 requires the Responses API for tool calling. The [implemented adapter](openai-provider.md) uses the Responses API; it does not
-reuse an Ollama-style chat request. Monetary valuation remains unsupported.
+reuse an Ollama-style chat request. Opt-in [usage-value estimates](cost-accounting.md)
+now support explicit Standard rate cards; provider billing reconciliation remains unsupported.
 
 For Sol, that reference states that requests above 272,000 input tokens multiply input
 and cache rates by two and output rates by 1.5 for the entire request. It also documents

@@ -66,8 +66,9 @@ internal consistency, not provider authenticity. Like existing model conversatio
 exports contain model text and now also opaque encrypted reasoning; review them before sharing.
 `store: false` is an API option, not a blanket statement about provider retention policies.
 
-`--pricing` and `--max-cost-usd` remain restricted to Ollama Cloud. OpenAI monetary
-valuation is deliberately unsupported until context tiers, caching and other applicable
-billing rules are implemented. Existing token/call/time allowances are not a cash spending
-cap; use provider-side spending controls for paid runs. The dated [pricing reference](openai-pricing.md)
-documents the remaining billing requirements. Anthropic's direct adapter remains future work.
+`--pricing` and `--max-cost-usd` support direct OpenAI with a version 2 rate card.
+See [cost accounting](cost-accounting.md) for context multipliers, cache uncertainty
+and estimated budget semantics. Existing token/call/time allowances are not a cash
+spending cap; use provider-side spending controls for paid runs. The dated
+[pricing reference](openai-pricing.md) records the example card's source. Anthropic's
+direct adapter remains future work.

@@ -13,15 +13,26 @@ def money(value):
 
 
 def validate_policy(policy, config):
+    if not isinstance(policy, dict): raise ValueError('Invalid cost policy')
     if set(policy) != {'rate_card', 'billing_context', 'max_cost_usd', 'input_token_reservation'}:
         raise ValueError('Invalid cost policy')
     card = policy['rate_card']
-    if set(card) != {'version', 'provider', 'model', 'currency', 'source', 'as_of', 'input', 'cached_input', 'output'}:
+    if not isinstance(card, dict): raise ValueError('Invalid rate card')
+    openai = card.get('version') == 2
+    extra = {'cache_write_30m', 'cache_write_12h', 'context_threshold',
+             'long_input_multiplier', 'long_output_multiplier', 'service_tier',
+             'cache_write_pricing'} if openai else set()
+    if set(card) != {'version', 'provider', 'model', 'currency', 'source', 'as_of', 'input', 'cached_input', 'output'} | extra:
         raise ValueError('Invalid rate card')
-    if (card['version'] != 1 or type(card['version']) is not int or card['provider'] != 'ollama'
+    provider = 'openai' if openai else 'ollama'
+    endpoint = 'https://api.openai.com' if openai else 'https://ollama.com'
+    if (card['version'] not in (1, 2) or type(card['version']) is not int or card['provider'] != provider
             or card['model'] != config.get('model') or card['currency'] != 'USD'
-            or config.get('backend') != 'ollama' or config.get('endpoint') != 'https://ollama.com'):
+            or config.get('backend') != provider or config.get('endpoint') != endpoint):
         raise ValueError('Rate card must match the cloud provider and model')
+    if openai:
+        from .openai_costs import validate_card
+        validate_card(card, config)
     if not all(isinstance(card[k], str) and card[k] for k in ('source', 'as_of')):
         raise ValueError('Pricing provenance required')
     for key in ('input', 'output'): money(card[key])
@@ -39,6 +50,9 @@ def value(tokens, rate):
 
 def reservation(policy, output_limit):
     card = policy['rate_card']
+    if card['version'] == 2:
+        from .openai_costs import reservation as openai_reservation
+        return openai_reservation(policy, output_limit)
     # Unknown cache split: reserve at the highest declared input rate.
     input_rate = max(money(card['input']), money(card['cached_input'] or card['input']))
     return Decimal(policy['input_token_reservation']) * input_rate / Decimal(1000000) + value(output_limit, card['output'])
@@ -46,6 +60,9 @@ def reservation(policy, output_limit):
 
 def summary(state):
     policy = state['config']['cost_policy']; validate_policy(policy, state['config'])
+    if policy['rate_card']['version'] == 2:
+        from .openai_costs import summary as openai_summary
+        return openai_summary(state)
     card = policy['rate_card']; minimum = Decimal(0); exposure = Decimal(0); exact = True
     for entry in state.get('cost_ledger', []):
         if entry.get('served_model') not in (None, card['model']):
@@ -106,6 +123,9 @@ def recheck(state):
         if 'cost_ledger' in state: raise ValueError('Ledger without pricing policy')
         return None
     policy = state['config']['cost_policy']; validate_policy(policy, state['config'])
+    if policy['rate_card']['version'] == 2:
+        from .usage import recheck as recheck_usage
+        recheck_usage(state)
     entries = state.get('cost_ledger', [])
     if not isinstance(entries, list) or len(entries) != state['model_calls']:
         raise ValueError('Cost ledger differs from model calls')
