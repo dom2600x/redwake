@@ -192,6 +192,7 @@ def validate_run(state):
     if state['status'] not in ('completed', 'stopped') or state.get('inflight_model'):
         raise ValueError('Run is active; finish or interrupt it before export')
     reasons = {'Time budget exhausted', 'Request budget exhausted', 'Model-call budget exhausted',
+               'Provider billing metadata does not match pricing policy',
                'Estimated cost budget exhausted', 'Output-token budget exhausted', 'Provider exceeded the requested output-token budget',
                'Rejected tool call outside the lab contract', 'Interrupted; saved progress can be resumed',
                'Operation failed; reservations retained', 'Comparison setup failed; run retained',

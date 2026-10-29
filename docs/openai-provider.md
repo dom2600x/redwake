@@ -72,3 +72,8 @@ and estimated budget semantics. Existing token/call/time allowances are not a ca
 spending cap; use provider-side spending controls for paid runs. The dated
 [pricing reference](openai-pricing.md) records the example card's source. Anthropic's
 direct adapter remains future work.
+
+Priced runs stop before executing proposed tools if returned model or service-tier
+metadata is missing or does not match the card. Resume retains the stop while any
+reported call has unsupported billing metadata; it does not spend another allowance.
+Unpriced runs retain their existing execution behavior.

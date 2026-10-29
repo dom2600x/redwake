@@ -92,6 +92,54 @@ class OpenAICostTests(unittest.TestCase):
         self.assertEqual(restored['reason'], 'Estimated cost budget exhausted')
         costs.recheck(restored)
 
+    def test_unpriceable_routes_stop_tools_and_resume_without_new_spend(self):
+        proposal = dict(type='function_call', call_id='probe', name='probe',
+                        arguments=json.dumps(dict(actor='alice', path='/api/documents/101')))
+        for fields in (dict(model='different-model'), dict(model=None),
+                       dict(service_tier='priority'), dict(service_tier='flex'),
+                       dict(service_tier=None), dict(service_tier='unrecognized-tier')):
+            with self.subTest(fields=fields):
+                state = self.state(calls=3)
+                with patch('redwake.runner.probe', side_effect=AssertionError('must not execute')):
+                    request = self.run_response(state, output=[proposal], **fields)
+                self.assertEqual(request.call_count, 1)
+                self.assertEqual(state['reason'], 'Provider billing metadata does not match pricing policy')
+                self.assertEqual(state['requests'], 0)
+                self.assertEqual(state['pending'], [])
+                self.assertEqual(state['usage_ledger'][0]['status'], 'reported')
+                self.assertEqual(state['input_tokens'], 100)
+                self.assertEqual(state['reserved_output_tokens'], 1024)
+                restored = self.store.load(state['id'])
+                with patch('redwake.openai.request_json', side_effect=AssertionError('must not call')):
+                    investigate(self.store, restored, 'unused', self.model)
+                self.assertEqual(restored['model_calls'], 1)
+                self.assertFalse(costs.reserve(restored, 1024))
+                export_run(restored, self.root / ('route-' + restored['id']))
+                verify_bundle(self.root / ('route-' + restored['id']))
+
+    def test_resume_blocks_previously_saved_pending_calls_from_unpriceable_route(self):
+        state = self.state(calls=3)
+        self.run_response(state, service_tier='priority')
+        # Simulate a checkpoint written by the earlier runner, before this guard.
+        state['pending'] = [dict(function=dict(name='probe', arguments=dict(actor='alice', path='/api/documents/101')))]
+        self.store.save(state)
+        restored = self.store.load(state['id'])
+        with patch('redwake.runner.probe', side_effect=AssertionError('must not execute')), \
+             patch('redwake.openai.request_json', side_effect=AssertionError('must not call')):
+            investigate(self.store, restored, 'unused', self.model)
+        self.assertEqual(restored['requests'], 0)
+        self.assertEqual(restored['model_calls'], 1)
+        self.assertEqual(len(restored['pending']), 1)
+
+    def test_unpriced_runs_are_not_restricted_by_billing_metadata(self):
+        state = self.state(calls=2)
+        del state['config']['cost_policy']
+        request = self.run_response(state, model='served-alias', service_tier='priority')
+        self.assertEqual(request.call_count, 2)
+        self.assertEqual(state['reason'], 'Model-call budget exhausted')
+        self.assertNotIn('cost_ledger', state)
+        validate_run(state)
+
     def test_timeout_reservation_and_ledger_forgery(self):
         state = self.state()
         with patch('redwake.openai.request_json', side_effect=TimeoutError()):

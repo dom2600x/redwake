@@ -93,7 +93,25 @@ def summary(state):
                 budget_is_estimate=True)
 
 
+def execution_blocked(state):
+    """Reported routing must match the rate card before any more work executes."""
+    card = state['config']['cost_policy']['rate_card']
+    for entry in state.get('cost_ledger', []):
+        # Transport failures have no reported route; their unknown usage keeps
+        # its reservation under the existing estimated-budget policy.
+        if entry['status'] != 'reported':
+            continue
+        if entry['served_model'] != card['model']:
+            return True
+        if card['provider'] == 'openai':
+            record = state['usage_ledger'][entry['call'] - 1]
+            if record['service_tier'] != card['service_tier']:
+                return True
+    return False
+
+
 def reserve(state, output_limit):
+    if execution_blocked(state): return False
     policy = state['config']['cost_policy']; amount = reservation(policy, output_limit)
     limit = policy['max_cost_usd']
     if limit is not None and money(summary(state)['estimated_exposure_usd']) + amount > money(limit):
