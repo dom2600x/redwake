@@ -46,8 +46,8 @@ release readiness; another broad operational benchmark is not the next step.
   the remote behavior required by a supported workflow.
 - Support frontier models alongside open-weight models. Free-tier availability was a
   development economy, not a sufficient basis for production model selection.
-- Ollama is the existing gateway. A common provider interface with direct OpenAI and
-  Anthropic adapters is the proposed initial extension; those adapters are not built yet.
+- Ollama is the existing gateway. Direct OpenAI Responses and Anthropic Messages
+  adapters now support the same bounded investigator with versioned provider usage.
 - Select the least expensive backend meeting security acceptance criteria, considering
   reliability and complete-investigation cost, rather than token price alone.
 - Keep scope, execution permissions, evidence requirements and budgets independent of
@@ -196,6 +196,7 @@ Historical artifacts remain unchanged. No live inference is needed to implement 
 Ollama flat-rate valuation remains available. OpenAI Standard usage-value estimates
 now accept explicit version 2 context/cache rate cards and preserve unreported
 cache-write uncertainty; exact billing reconciliation and other tiers remain unsupported.
-Anthropic follows after the first direct-provider path is complete. Daybreak and
+Anthropic Messages now preserves disjoint input/cache categories and tool-call replay;
+its monetary valuation remains a separate task. Daybreak and
 Mythos access restrictions remain in effect. Neither adapter support nor tool protocol
 tests select a model for its security-analysis capability.

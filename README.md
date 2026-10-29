@@ -78,6 +78,11 @@ explicit `--model`. It supports the same bounded probes and finding submissions.
 [OpenAI provider guide](docs/openai-provider.md) for usage accounting, resume and pricing
 limitations. Adapter support does not establish model security capability.
 
+Direct Anthropic Messages support uses `ANTHROPIC_API_KEY` and an explicit
+`--backend anthropic --model YOUR_MODEL`. It supports the same bounded probes,
+finding submissions and offline evidence, with separate cache-read/write usage
+categories. See the [Anthropic provider guide](docs/anthropic-provider.md).
+
 A running local Ollama server is also supported:
 
 ```sh
@@ -111,7 +116,7 @@ The baseline evaluation covers vulnerable reads, 403 protection, 404 concealment
 - `transport.py`: bounded JSON requests and scope enforcement.
 - `runner.py`: baseline/model execution, discovery traversal and usage reservations.
 - `providers.py`, `openai.py`: provider adapters and tool schemas.
-- `usage.py`, `costs.py`: per-call usage records and rate-card valuation.
+- `usage.py`, `anthropic_usage.py`, `costs.py`: per-call usage records and rate-card valuation.
 - `store.py`: SQLite checkpoints.
 - `report.py`: Markdown and JSON artifacts.
 - `artifacts.py`: portable investigation export and shared offline verification.

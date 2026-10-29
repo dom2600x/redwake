@@ -93,5 +93,9 @@ Opt-in Ollama usage ledgers and flat-rate valuations are implemented; see
 the [provider guide](openai-provider.md). Opt-in OpenAI Standard usage-value estimates
 now handle explicit context multipliers, cached reads and unreported cache-write ranges.
 Provider billing reconciliation and additional service modes remain future work.
-An Anthropic adapter and its distinct cache accounting are the next integration task.
+Direct Anthropic Messages execution and version 2 usage records now preserve
+ordinary input, cache reads, creation and retention splits; see the
+[provider guide](anthropic-provider.md). Anthropic monetary valuation remains a
+separate integration task. Bounded security acceptance with unfamiliar policies
+and negative controls follows the provider foundations.
 The historical fixture scores remain separate from submitted claims.

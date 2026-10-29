@@ -42,12 +42,10 @@ def investigate(store, state, origin, provider=None):
     limits = state["config"]["limits"]
     scenario = state["config"].get("scenario", "classic")
     priced = 'cost_policy' in state['config']
-    if 'usage_version' in state['config'] and (type(state['config']['usage_version']) is not int
-            or state['config']['usage_version'] != 1 or state['config']['backend'] not in ('ollama', 'openai')):
-        raise ValueError('Unsupported usage contract')
-    metered = state['config'].get('usage_version') == 1
-    if state['config']['backend'] == 'openai' and not metered:
-        raise ValueError('OpenAI requires versioned usage accounting')
+    metered = 'usage_version' in state['config']
+    if metered: usage.empty_record(state['config'])
+    if state['config']['backend'] in ('openai', 'anthropic') and not metered:
+        raise ValueError('Direct providers require versioned usage accounting')
     if priced:
         from . import costs
         costs.validate_policy(state['config']['cost_policy'], state['config'])
@@ -55,7 +53,7 @@ def investigate(store, state, origin, provider=None):
     if contract is not None:
         from .submission import check_contract
         check_contract(contract, scenario)
-        if state['config']['backend'] not in ('ollama', 'openai'):
+        if state['config']['backend'] not in ('ollama', 'openai', 'anthropic'):
             raise ValueError('Finding submission requires a model backend')
     started = time.monotonic()
     previous_elapsed = state["elapsed"]
@@ -154,11 +152,11 @@ def investigate(store, state, origin, provider=None):
                         usage.received(state, response)
                     if priced:
                         costs.received(state, response)
-                    if state['config']['backend'] == 'openai' and response.get('provider_failure_category'):
+                    if state['config']['backend'] in ('openai', 'anthropic') and response.get('provider_failure_category'):
                         category = response['provider_failure_category']
                         if category not in ('inference_error', 'response_protocol', 'inference_incomplete'):
                             category = 'response_protocol'
-                        if category == 'inference_incomplete' and 'openai_output' in response['message']:
+                        if category == 'inference_incomplete' and ('openai_output' in response['message'] or 'anthropic_content' in response['message']):
                             state['messages'].append(response['message'])
                         raise ProviderError(category)
                     if priced:

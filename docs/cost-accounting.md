@@ -5,7 +5,9 @@ card and billing context, then saves one ledger entry per model call. Historical
 and comparison profiles keep their original format and receive no retrospective charges.
 The [OpenAI adapter](openai-provider.md) now records normalized usage independently of
 pricing. OpenAI Standard usage-value estimates now use version 2 cards as described
-below. A direct Anthropic adapter remains unimplemented.
+below. The [Anthropic adapter](anthropic-provider.md) records separate input/cache
+categories through usage contract version 2; Anthropic monetary valuation remains
+unsupported, and Ollama/OpenAI rate cards are rejected for that route.
 
 ```sh
 python3 -m redwake demo --backend ollama --model nemotron-3-ultra \

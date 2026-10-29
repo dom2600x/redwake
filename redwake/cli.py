@@ -29,14 +29,14 @@ def main(argv=None):
     demo = commands.add_parser("demo", help="Investigate an ephemeral local lab")
     demo.add_argument("--scenario", choices=SCENARIOS, default="classic")
     demo.add_argument("--mode", choices=MODES, default="vulnerable")
-    demo.add_argument("--backend", choices=("baseline", "ollama", "openai"), default="baseline")
+    demo.add_argument("--backend", choices=("baseline", "ollama", "openai", "anthropic"), default="baseline")
     demo.add_argument("--contract", type=Path, help="Enable model finding submission with a saved read policy")
     demo.add_argument("--pricing", type=Path, help="Versioned USD rate card for per-call accounting")
     demo.add_argument("--billing-context", choices=('free','included','purchased','unknown'), default='unknown')
     demo.add_argument("--max-cost-usd", help="Estimated usage-value budget, not a provider-enforced cash cap")
     demo.add_argument("--input-token-reservation", type=positive, default=32768)
-    demo.add_argument("--model", help="Model identifier; required for OpenAI")
-    demo.add_argument("--endpoint", choices=("https://ollama.com", "http://127.0.0.1:11434", "https://api.openai.com"))
+    demo.add_argument("--model", help="Model identifier; required for OpenAI and Anthropic")
+    demo.add_argument("--endpoint", choices=("https://ollama.com", "http://127.0.0.1:11434", "https://api.openai.com", "https://api.anthropic.com"))
     for name in DEFAULT_LIMITS:
         demo.add_argument("--max-" + name.replace("_", "-"), type=positive, default=None)
     resume = commands.add_parser("resume", help="Resume saved work with its original budgets")
@@ -124,23 +124,25 @@ def main(argv=None):
                     state = store.load(args.run_id)
                     config = state["config"]
                 else:
-                    if args.backend == 'openai' and not args.model:
-                        raise ValueError('--backend openai requires an explicit --model')
-                    endpoint = args.endpoint or ('https://api.openai.com' if args.backend == 'openai' else 'https://ollama.com')
+                    if args.backend in ('openai', 'anthropic') and not args.model:
+                        raise ValueError('--backend ' + args.backend + ' requires an explicit --model')
+                    endpoint = args.endpoint or {'openai': 'https://api.openai.com', 'anthropic': 'https://api.anthropic.com'}.get(args.backend, 'https://ollama.com')
                     if ((args.backend == 'openai' and endpoint != 'https://api.openai.com')
+                            or (args.backend == 'anthropic' and endpoint != 'https://api.anthropic.com')
                             or (args.backend == 'ollama' and endpoint not in ('https://ollama.com', 'http://127.0.0.1:11434'))):
                         raise ValueError('Endpoint must match the selected provider')
                     config = {"backend": args.backend, "mode": args.mode, "model": args.model or 'gpt-oss:120b',
                               "endpoint": endpoint, "scenario": args.scenario, "limits": {
                                   k: getattr(args, "max_" + k) or default_limits[k] for k in DEFAULT_LIMITS}}
                     if args.backend in ('ollama', 'openai'): config['usage_version'] = 1
+                    if args.backend == 'anthropic': config['usage_version'] = 2
                     if args.scenario in ('discovery_deep', 'discovery_branch'):
                         config['guidance_variant'] = 'graph'
                     if args.contract:
                         from .submission import check_contract
                         contract = json.loads(args.contract.read_text())
                         check_contract(contract, args.scenario)
-                        if args.backend not in ('ollama', 'openai'): raise ValueError('--contract requires a model backend')
+                        if args.backend not in ('ollama', 'openai', 'anthropic'): raise ValueError('--contract requires a model backend')
                         config['access_contract'] = contract
                     if args.pricing:
                         from .costs import validate_policy
@@ -155,6 +157,9 @@ def main(argv=None):
                 if config['backend'] == 'openai':
                     from .openai import OpenAI
                     provider = OpenAI(config['model'], config['endpoint'])
+                if config['backend'] == 'anthropic':
+                    from .anthropic import Anthropic
+                    provider = Anthropic(config['model'], config['endpoint'])
                 if config.get('access_contract') is not None:
                     from .submission import SUBMISSION_TOOLS
                     provider.tools = SUBMISSION_TOOLS

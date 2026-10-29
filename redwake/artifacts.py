@@ -185,8 +185,9 @@ def validate_run(state):
         raise ValueError('Unsupported run configuration')
     scenario = config.get('scenario', 'classic')
     if (scenario not in SCENARIOS or config.get('mode') not in MODES
-            or config.get('backend') not in ('baseline', 'ollama', 'openai')
+            or config.get('backend') not in ('baseline', 'ollama', 'openai', 'anthropic')
             or config.get('endpoint') not in (('https://api.openai.com',) if config.get('backend') == 'openai'
+                                            else ('https://api.anthropic.com',) if config.get('backend') == 'anthropic'
                                             else (None, 'https://ollama.com', 'http://127.0.0.1:11434'))):
         raise ValueError('Unsupported lab configuration')
     if state['status'] not in ('completed', 'stopped') or state.get('inflight_model'):
