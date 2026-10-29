@@ -96,6 +96,8 @@ def investigate(store, state, origin, provider=None):
     save()
     try:
         while True:
+            if priced and costs.execution_blocked(state):
+                return stop('Provider billing metadata does not match pricing policy')
             if contract is None and state["config"]["backend"] != "baseline" and (discovery_coverage(state["evidence"], scenario) if discovery_scenario(scenario)
                     else not missing_checks(state["evidence"])):
                 state["status"] = "completed"
@@ -160,6 +162,8 @@ def investigate(store, state, origin, provider=None):
                             state['messages'].append(response['message'])
                         raise ProviderError(category)
                     if priced:
+                        if costs.execution_blocked(state):
+                            return stop('Provider billing metadata does not match pricing policy')
                         budget = state["config"]["cost_policy"]["max_cost_usd"]
                         if budget is not None and costs.money(costs.summary(state)["estimated_exposure_usd"]) > costs.money(budget):
                             return stop("Estimated cost budget exhausted")

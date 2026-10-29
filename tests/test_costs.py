@@ -13,7 +13,7 @@ from redwake.store import Store
 
 class Model:
     def chat(self,*args):
-        return dict(message=dict(role='assistant',tool_calls=[]),prompt_eval_count=1000,eval_count=100)
+        return dict(model='nemotron-3-ultra',message=dict(role='assistant',tool_calls=[]),prompt_eval_count=1000,eval_count=100)
 
 
 class CostTests(unittest.TestCase):
@@ -92,7 +92,7 @@ class CostTests(unittest.TestCase):
 
     def test_reported_usage_exceeding_estimate_stops_before_tools(self):
         state=self.state('0.004');model=Model()
-        response=dict(message=dict(role='assistant',tool_calls=[]),prompt_eval_count=100000,eval_count=100)
+        response=dict(model='nemotron-3-ultra',message=dict(role='assistant',tool_calls=[]),prompt_eval_count=100000,eval_count=100)
         with patch.object(model,'chat',return_value=response):investigate(self.store,state,'unused',model)
         self.assertEqual(state['reason'],'Estimated cost budget exhausted')
         self.assertEqual(state['cost_ledger'][0]['status'],'reported')
@@ -106,6 +106,42 @@ class CostTests(unittest.TestCase):
         self.assertIsNone(result['calculated_usage_value_usd'])
         self.assertEqual(result['model_mismatch_calls'],1)
 
+    def test_missing_or_mismatched_ollama_model_stops_before_tools_and_resume(self):
+        for model_name in (None, 'different-model'):
+            state = self.state(calls=3)
+            response = dict(model=model_name, prompt_eval_count=1000, eval_count=100,
+                message=dict(role='assistant', tool_calls=[dict(function=dict(name='probe',
+                    arguments=dict(actor='alice', path='/api/documents/101')))]))
+            model = Model()
+            with patch.object(model, 'chat', return_value=response) as chat, \
+                 patch('redwake.runner.probe', side_effect=AssertionError('must not execute')):
+                investigate(self.store, state, 'unused', model)
+            self.assertEqual(chat.call_count, 1)
+            self.assertEqual(state['reason'], 'Provider billing metadata does not match pricing policy')
+            self.assertEqual(state['requests'], 0)
+            result = costs.recheck(state)
+            self.assertFalse(result['model_identity_verified'])
+            if model_name is None:
+                # Keep historical v1 report/proof valuation stable. The guard
+                # blocks execution independently of its unverified estimate.
+                self.assertEqual(costs.money(result['calculated_usage_value_usd']), costs.money('0.0004'))
+            restored = self.store.load(state['id'])
+            with patch.object(model, 'chat', side_effect=AssertionError('must not call')):
+                investigate(self.store, restored, 'unused', model)
+            self.assertEqual(restored['model_calls'], 1)
+            self.assertFalse(costs.reserve(restored, 1024))
+            export_run(restored, self.root / ('route-' + restored['id']))
+            verify_bundle(self.root / ('route-' + restored['id']))
+
+    def test_unknown_usage_with_matching_model_still_uses_estimated_reservations(self):
+        state = self.state(calls=2)
+        response = dict(model='nemotron-3-ultra', message=dict(role='assistant', tool_calls=[]))
+        model = Model()
+        with patch.object(model, 'chat', return_value=response) as chat:
+            investigate(self.store, state, 'unused', model)
+        self.assertEqual(chat.call_count, 2)
+        self.assertEqual(costs.recheck(state)['unknown_usage_calls'], 2)
+
     def test_partial_usage_keeps_upper_input_value_and_blocks_next_call(self):
         state = self.state('0.015', calls=2)
         state['config']['cost_policy']['rate_card']['cached_input'] = '0.01'
@@ -113,7 +149,7 @@ class CostTests(unittest.TestCase):
         # The first call fits its reservation, but reports a larger context and
         # no output usage. The unknown cache split must use the upper input rate
         # for exposure while retaining the lower rate as the known minimum.
-        response = dict(message=dict(role='assistant', tool_calls=[]),
+        response = dict(model='nemotron-3-ultra',message=dict(role='assistant', tool_calls=[]),
                         prompt_eval_count=120000)
         with patch.object(model, 'chat', return_value=response) as chat:
             investigate(self.store, state, 'unused', model)

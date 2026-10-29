@@ -27,7 +27,8 @@ Each call reserves output allowance as before, plus a usage-value estimate befor
 network request. The durable ledger records a UTC start time, call number, output limit,
 reservation and returned input/output token counts. A bounded served-model identifier is recorded
 when reported. A mismatch with the rate card leaves valuation unknown and retains the
-reservation; aliases are not silently equated. Missing model identity is flagged as unverified. Failures and interrupted calls retain
+reservation; aliases are not silently equated. Missing model identity is flagged as
+unverified. Failures and interrupted calls retain
 unknown usage and their estimated reservation. Missing usage is never replaced by zero.
 Resume keeps the original policy, ledger and cumulative limits; it cannot add a new budget.
 
@@ -111,3 +112,25 @@ actual charges. Input reservations remain estimates and can be exceeded remotely
 The same estimated budget gate applies before inference and before executing
 proposed tools after an overrun. Resume and offline verification preserve and
 recompute both ledgers, including their agreement on counts and model identity.
+
+## Unsupported billing metadata stops execution
+
+Priced investigations stop with `Provider billing metadata does not match pricing policy`
+when a reported response omits the served model or returns a model different from
+the card. Priced OpenAI responses also require the card's default service tier;
+missing, unknown and other tiers stop execution. This applies even without a
+`--max-cost-usd` limit. Choose a card for the exact served identifier; aliases are
+not automatically equated and a saved run's pricing policy cannot be replaced on resume.
+
+Reported usage and consumed reservations remain saved. The response's proposed tools
+do not execute, and resume checks every reported call before executing saved pending
+tools or making another provider call. This also blocks stopped checkpoints written
+by earlier versions that allowed unsupported billing metadata to continue. Completed
+historical runs remain replayable and exportable; this is an execution guard.
+Existing version 1 Ollama valuation semantics remain unchanged: absent model identity
+can still show a requested-model rate-card value flagged as unverified. That value
+does not authorize further execution when the reported route cannot be confirmed.
+
+Missing token counts with a matching supported model/tier remain estimated under the
+existing reservation policy. Transport failures with no reported route likewise retain
+unknown usage and reservations. Unpriced runs do not require billing metadata.
