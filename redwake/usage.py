@@ -18,6 +18,9 @@ def identifier(value):
 
 def normalize(backend, response):
     """Totals include subsets: never add cached input or reasoning a second time."""
+    if backend == 'anthropic':
+        from .anthropic_usage import normalize as normalize_anthropic
+        return normalize_anthropic(response)
     result = dict(model=identifier(response.get('model')), response_status='unknown',
                   service_tier='unknown', **{key: None for key in COUNTS})
     if backend == 'ollama':
@@ -45,18 +48,27 @@ def normalize(backend, response):
     return result
 
 
+def empty_record(config):
+    version = config.get('usage_version')
+    if type(version) is not int or (version, config['backend']) not in ((1, 'ollama'), (1, 'openai'), (2, 'anthropic')):
+        raise ValueError('Unsupported usage contract')
+    if version == 2:
+        from .anthropic_usage import empty
+        return empty()
+    return dict(model=None, response_status='unknown', service_tier='unknown', **{key: None for key in COUNTS})
+
+
 def begin(state, output_limit):
     state.setdefault('usage_ledger', []).append(dict(call=state['model_calls'] + 1,
         started_utc=datetime.now(timezone.utc).isoformat(), status='reserved',
-        output_limit=output_limit, model=None, response_status='unknown', service_tier='unknown',
-        **{key: None for key in COUNTS}))
+        output_limit=output_limit, **empty_record(state['config'])))
 
 
 def received(state, response):
-    # OpenAI's adapter supplies already normalized, strictly allowlisted metadata.
-    record = (response['provider_usage'] if state['config']['backend'] == 'openai'
+    # Direct adapters supply already normalized, strictly allowlisted metadata.
+    record = (response['provider_usage'] if state['config']['backend'] in ('openai', 'anthropic')
               else normalize('ollama', response))
-    validate_record(record)
+    validate_record(record, state['config']['usage_version'])
     state['usage_ledger'][-1].update(record, status='reported')
 
 
@@ -65,30 +77,39 @@ def interrupted(state):
     if entries and entries[-1]['status'] == 'reserved': entries[-1]['status'] = 'unknown'
 
 
-def validate_record(record):
-    if not isinstance(record, dict) or set(record) != {'model', 'response_status', 'service_tier', *COUNTS}:
+def validate_record(record, version=1):
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError('Unsupported usage contract')
+    if version == 2:
+        from .anthropic_usage import COUNTS as counts, empty, validate
+        if not isinstance(record, dict) or set(record) != set(empty()):
+            raise ValueError('Invalid normalized provider usage')
+    else:
+        counts = COUNTS
+    if version != 2 and (not isinstance(record, dict) or set(record) != {'model', 'response_status', 'service_tier', *COUNTS}):
         raise ValueError('Invalid normalized provider usage')
     if (record['model'] is not None and identifier(record['model']) != record['model']
-            or record['response_status'] not in STATUSES or record['service_tier'] not in TIERS):
+            or record['response_status'] not in STATUSES or (version != 2 and record['service_tier'] not in TIERS)):
         raise ValueError('Invalid provider usage metadata')
-    for key in COUNTS:
+    for key in counts:
         if record[key] is not None and count(record[key]) is None: raise ValueError('Invalid usage count')
-    for total, subset in (('input_tokens', 'cached_input_tokens'), ('output_tokens', 'reasoning_tokens')):
+    if version == 2:
+        validate(record)
+    for total, subset in (() if version == 2 else (('input_tokens', 'cached_input_tokens'), ('output_tokens', 'reasoning_tokens'))):
         if record[subset] is not None and (record[total] is None or record[subset] > record[total]):
             raise ValueError('Invalid usage subset')
 
 
 def recheck(state):
     if 'usage_version' not in state['config']:
-        if 'usage_ledger' in state or state['config']['backend'] == 'openai':
+        if 'usage_ledger' in state or state['config']['backend'] in ('openai', 'anthropic'):
             raise ValueError('Missing usage contract version')
         return None
-    if type(state['config']['usage_version']) is not int or state['config']['usage_version'] != 1 or state['config']['backend'] not in ('ollama', 'openai'):
-        raise ValueError('Unsupported usage contract')
+    empty = empty_record(state['config'])
     entries = state.get('usage_ledger', [])
     if not isinstance(entries, list) or len(entries) != state['model_calls']: raise ValueError('Usage ledger differs from model calls')
     for number, entry in enumerate(entries, 1):
-        if not isinstance(entry, dict) or set(entry) != {'call', 'started_utc', 'status', 'output_limit', 'model', 'response_status', 'service_tier', *COUNTS}:
+        if not isinstance(entry, dict) or set(entry) != {'call', 'started_utc', 'status', 'output_limit'} | set(empty):
             raise ValueError('Invalid usage ledger')
         if (type(entry['call']) is not int or entry['call'] != number or entry['status'] not in ('reported', 'unknown')
                 or type(entry['output_limit']) is not int or not 1 <= entry['output_limit'] <= 1024):
@@ -96,9 +117,9 @@ def recheck(state):
         if not isinstance(entry['started_utc'], str): raise ValueError('Invalid usage timestamp')
         timestamp = datetime.fromisoformat(entry['started_utc'])
         if timestamp.utcoffset() != timezone.utc.utcoffset(timestamp): raise ValueError('Usage timestamp must use UTC')
-        record = {key: entry[key] for key in ('model', 'response_status', 'service_tier', *COUNTS)}
-        validate_record(record)
-        if entry['status'] == 'unknown' and record != dict(model=None, response_status='unknown', service_tier='unknown', **{key: None for key in COUNTS}):
+        record = {key: entry[key] for key in empty}
+        validate_record(record, state['config']['usage_version'])
+        if entry['status'] == 'unknown' and record != empty:
             raise ValueError('Unknown call contains reported usage')
     if sum(entry['output_limit'] for entry in entries) != state['reserved_output_tokens']:
         raise ValueError('Usage output reservations differ')

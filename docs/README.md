@@ -31,6 +31,8 @@ claim validation and portable acceptance/rejection proofs.
 See [cost accounting](cost-accounting.md) for per-call usage, rate snapshots and estimated
 budget controls. See the [OpenAI provider guide](openai-provider.md) for direct
 Responses API execution and normalized usage.
+See the [Anthropic provider guide](anthropic-provider.md) for direct Messages
+execution and disjoint input/cache accounting.
 
 ## Design and roadmap
 

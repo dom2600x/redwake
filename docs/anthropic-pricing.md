@@ -47,14 +47,15 @@ split, preserve the unknown rather than inventing an exact charge.
 
 ## Implementation consequences
 
-The proposed Anthropic adapter must preserve raw reported usage categories alongside
-normalized totals. Keep provider/model identifiers, API version, cache retention,
+The [Anthropic adapter](anthropic-provider.md) preserves allowlisted reported usage
+categories alongside normalized totals, requested API version, stop reason and service tier.
+Future monetary valuation must keep provider/model identifiers, cache retention,
 processing mode, inference geography and pricing provenance with cost calculations.
 Use reported token usage rather than assuming the same prompt has the same token count
 across models or providers. Confirm exact API model IDs before making the snapshot executable.
 
-These are implementation requirements, not claims that the adapter or accounting already
-exists. Credentials, model availability and billing have not been checked through API calls.
+Monetary valuation is not implemented. Credentials, model availability and billing
+have not been checked through API calls.
 Recheck current rates before paid acceptance work and reconcile against provider billing
 where supported. Published price or model descriptions do not establish security capability;
 selection remains governed by the project's security acceptance criteria.
