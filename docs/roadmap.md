@@ -95,7 +95,25 @@ now handle explicit context multipliers, cached reads and unreported cache-write
 Provider billing reconciliation and additional service modes remain future work.
 Direct Anthropic Messages execution and version 2 usage records now preserve
 ordinary input, cache reads, creation and retention splits; see the
-[provider guide](anthropic-provider.md). Anthropic monetary valuation remains a
-separate integration task. Bounded security acceptance with unfamiliar policies
+[provider guide](anthropic-provider.md). Opt-in version 3 cards now estimate
+Anthropic usage value and enforce estimated budgets. Bounded security acceptance with unfamiliar policies
 and negative controls follows the provider foundations.
 The historical fixture scores remain separate from submitted claims.
+
+
+## Current development priority
+
+Anthropic version 3 pricing now values ordinary input, reads and 5-minute/1-hour
+writes, preserves unknown usage, and checks durable reservations on resume and
+offline verification. Billing reconciliation remains separate.
+
+Next, implement security acceptance on unfamiliar authorization cases and negative
+controls. Keep acceptance fixtures separate from prompt examples and development
+cases. Require model-submitted claims supported by executed evidence and explicit
+policy, rather than crediting traversal or historical fixture scores. Include
+cross-account protected reads, public resources, concealed resources and outages
+as negative controls, alongside unfamiliar vulnerable authorization relationships.
+Measure accepted supported findings, missed findings, unsupported claims and
+negative-control false positives separately. Establish deterministic verifier
+controls first; any later paid model acceptance needs explicit models, bounded
+budgets and a stopping condition. Existing model scores do not establish capability.

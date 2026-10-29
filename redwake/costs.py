@@ -18,6 +18,17 @@ def validate_policy(policy, config):
         raise ValueError('Invalid cost policy')
     card = policy['rate_card']
     if not isinstance(card, dict): raise ValueError('Invalid rate card')
+    if type(card.get('version')) is int and card['version'] == 3:
+        from .anthropic_costs import validate_card
+        validate_card(card, config)
+        for key in ('source', 'as_of'):
+            if not isinstance(card[key], str) or not card[key]: raise ValueError('Pricing provenance required')
+        if policy['billing_context'] not in ('free', 'included', 'purchased', 'unknown'):
+            raise ValueError('Invalid billing context')
+        if policy['max_cost_usd'] is not None: money(policy['max_cost_usd'])
+        if type(policy['input_token_reservation']) is not int or policy['input_token_reservation'] <= 0:
+            raise ValueError('Input reservation must be positive')
+        return
     openai = card.get('version') == 2
     extra = {'cache_write_30m', 'cache_write_12h', 'context_threshold',
              'long_input_multiplier', 'long_output_multiplier', 'service_tier',
@@ -50,6 +61,9 @@ def value(tokens, rate):
 
 def reservation(policy, output_limit):
     card = policy['rate_card']
+    if card['version'] == 3:
+        from .anthropic_costs import reservation as anthropic_reservation
+        return anthropic_reservation(policy, output_limit)
     if card['version'] == 2:
         from .openai_costs import reservation as openai_reservation
         return openai_reservation(policy, output_limit)
@@ -60,6 +74,9 @@ def reservation(policy, output_limit):
 
 def summary(state):
     policy = state['config']['cost_policy']; validate_policy(policy, state['config'])
+    if policy['rate_card']['version'] == 3:
+        from .anthropic_costs import summary as anthropic_summary
+        return anthropic_summary(state)
     if policy['rate_card']['version'] == 2:
         from .openai_costs import summary as openai_summary
         return openai_summary(state)
@@ -103,6 +120,10 @@ def execution_blocked(state):
             continue
         if entry['served_model'] != card['model']:
             return True
+        if card['provider'] == 'anthropic':
+            record = state['usage_ledger'][entry['call'] - 1]
+            if record['service_tier'] != card['service_tier'] or record['api_version'] != card['api_version']:
+                return True
         if card['provider'] == 'openai':
             record = state['usage_ledger'][entry['call'] - 1]
             if record['service_tier'] != card['service_tier']:
@@ -141,7 +162,7 @@ def recheck(state):
         if 'cost_ledger' in state: raise ValueError('Ledger without pricing policy')
         return None
     policy = state['config']['cost_policy']; validate_policy(policy, state['config'])
-    if policy['rate_card']['version'] == 2:
+    if policy['rate_card']['version'] in (2, 3):
         from .usage import recheck as recheck_usage
         recheck_usage(state)
     entries = state.get('cost_ledger', [])

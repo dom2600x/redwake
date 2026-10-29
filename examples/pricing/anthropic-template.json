@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "provider": "anthropic",
+  "model": "REPLACE_WITH_EXACT_API_MODEL_ID",
+  "currency": "USD",
+  "source": "Synthetic example only; replace with verified pricing provenance and rates",
+  "as_of": "2026-10-29",
+  "input": "2",
+  "cached_input": "0.1",
+  "cache_write_5m": "2.5",
+  "cache_write_1h": "4",
+  "output": "10",
+  "context_threshold": 100000,
+  "long_input_multiplier": "1",
+  "long_output_multiplier": "1",
+  "service_tier": "standard",
+  "api_version": "2023-06-01",
+  "processing_mode": "synchronous",
+  "inference_geo": "global"
+}
