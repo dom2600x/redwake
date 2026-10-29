@@ -105,3 +105,27 @@ class CostTests(unittest.TestCase):
         result=costs.recheck(state)
         self.assertIsNone(result['calculated_usage_value_usd'])
         self.assertEqual(result['model_mismatch_calls'],1)
+
+    def test_partial_usage_keeps_upper_input_value_and_blocks_next_call(self):
+        state = self.state('0.015', calls=2)
+        state['config']['cost_policy']['rate_card']['cached_input'] = '0.01'
+        model = Model()
+        # The first call fits its reservation, but reports a larger context and
+        # no output usage. The unknown cache split must use the upper input rate
+        # for exposure while retaining the lower rate as the known minimum.
+        response = dict(message=dict(role='assistant', tool_calls=[]),
+                        prompt_eval_count=120000)
+        with patch.object(model, 'chat', return_value=response) as chat:
+            investigate(self.store, state, 'unused', model)
+        result = costs.recheck(state)
+        self.assertEqual(chat.call_count, 1)
+        self.assertEqual(state['reason'], 'Estimated cost budget exhausted')
+        self.assertEqual(costs.money(result['known_minimum_usd']), costs.money('0.0012'))
+        self.assertEqual(costs.money(result['estimated_exposure_usd']), costs.money('0.012'))
+        self.assertIsNone(result['calculated_usage_value_usd'])
+        restored = self.store.load(state['id'])
+        with patch.object(model, 'chat', side_effect=AssertionError('budget exhausted')):
+            investigate(self.store, restored, 'unused', model)
+        self.assertEqual(restored['model_calls'], 1)
+        export_run(restored, self.root / 'partial-proof')
+        verify_bundle(self.root / 'partial-proof')

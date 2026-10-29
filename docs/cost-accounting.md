@@ -52,6 +52,9 @@ rate-card value of reported counts; unknown responses retain at least their rese
 If reported usage exceeds the configured budget, the run stops before executing its tools.
 
 The input reservation is an operator estimate, not an enforced provider input-token limit.
+For partially reported usage, estimated exposure retains at least the reservation
+and the conservative value of every reported token category. The known minimum
+remains separate; an unknown cache split cannot lower the exposure used by the gate.
 Underestimated context, provider billing differences and timed-out work can exceed it.
 `--max-cost-usd` therefore limits estimated usage value, not cash spending. Provider-side
 controls or authoritative reconciliation are needed for a strict monetary guarantee.
