@@ -4,8 +4,8 @@ The first implementation is opt-in for Ollama Cloud. A run snapshots a flat USD 
 card and billing context, then saves one ledger entry per model call. Historical runs
 and comparison profiles keep their original format and receive no retrospective charges.
 The [OpenAI adapter](openai-provider.md) now records normalized usage independently of
-pricing. Monetary valuation for OpenAI, its cache-write/tier rules, and a direct Anthropic
-adapter remain unimplemented.
+pricing. OpenAI Standard usage-value estimates now use version 2 cards as described
+below. A direct Anthropic adapter remains unimplemented.
 
 ```sh
 python3 -m redwake demo --backend ollama --model nemotron-3-ultra \
@@ -67,3 +67,47 @@ unknown-usage call count and billing context. `export` preserves the policy and 
 `verify` recomputes valuations and checks call counts, reservations and aggregate usage.
 No network access or billing API is used for replay or verification. There is no claim
 that a self-contained hash inventory authenticates provider billing or observations.
+
+## Direct OpenAI estimates
+
+```sh
+python3 -m redwake demo --backend openai --model gpt-6.1-sol \
+  --pricing examples/pricing/openai-sol.json --billing-context purchased \
+  --input-token-reservation 32768 --max-cost-usd 1
+```
+
+This is an optional paid command, not a development check. The example preserves
+the October 28 documentation snapshot; confirm current rates and account access
+before use. No live API validation or model entitlement is implied.
+
+Version 2 cards require the exact model, direct OpenAI route, default service tier,
+ordinary input, cached input, output, 30-minute and 12-hour cache-write rates, a
+positive context threshold and input/output multipliers of at least one. All rates
+are USD per million tokens; multipliers are decimal strings. Threshold comparison
+is strict: only input totals above the threshold apply long-context multipliers
+to the entire request, including cached reads and output. Each card declares its
+own rules; models do not inherit another model's context policy.
+Cards must declare `cache_write_pricing: "replacement"`: each cache-write rate
+replaces the ordinary input rate for those tokens. Additive write surcharges are
+unsupported. Confirm this interpretation with the supplied rate source; this
+implementation does not discover or certify provider billing rules.
+
+Reported cached reads are subtracted from total input before valuing remaining
+input. Reasoning is already included in output and is never charged twice. The
+adapter does not report cache-write counts or retention. Remaining input therefore
+uses the lowest applicable input/write rate for the known minimum and the highest
+for exposure; a missing cached-read split also includes the cached rate in this
+range. OpenAI valuations always remain estimates, with cash charges and exact
+calculated usage value unknown. Regional premiums, additional service modes and
+provider billing reconciliation are unsupported.
+
+Before each call, reserve the highest input/read/write rate and long-context
+multipliers, even when the configured input estimate is below the threshold.
+Partial responses retain at least this reservation and the upper valuation of
+known categories. Failed/incomplete responses retain reported usage. Unknown
+served models or non-default/unknown returned tiers retain the reservation with
+no known minimum assigned to that call; those rates cannot establish a bound on
+actual charges. Input reservations remain estimates and can be exceeded remotely.
+The same estimated budget gate applies before inference and before executing
+proposed tools after an overrun. Resume and offline verification preserve and
+recompute both ledgers, including their agreement on counts and model identity.

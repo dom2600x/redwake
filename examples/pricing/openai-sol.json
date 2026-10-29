@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "provider": "openai",
+  "model": "gpt-6.1-sol",
+  "currency": "USD",
+  "source": "2026-10-28 documentation snapshot; https://developers.openai.com/api/docs/pricing",
+  "as_of": "2026-10-28",
+  "service_tier": "default",
+  "cache_write_pricing": "replacement",
+  "input": "2.00",
+  "cached_input": "0.10",
+  "output": "10.00",
+  "cache_write_30m": "2.50",
+  "cache_write_12h": "5.00",
+  "context_threshold": 272000,
+  "long_input_multiplier": "2",
+  "long_output_multiplier": "1.5"
+}
