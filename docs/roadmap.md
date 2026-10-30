@@ -107,8 +107,9 @@ Anthropic version 3 pricing now values ordinary input, reads and 5-minute/1-hour
 writes, preserves unknown usage, and checks durable reservations on resume and
 offline verification. Billing reconciliation remains separate.
 
-Next, implement security acceptance on unfamiliar authorization cases and negative
-controls. Keep acceptance fixtures separate from prompt examples and development
+The [security acceptance foundation](security-acceptance.md) now provides unfamiliar
+read-policy cases, negative controls and offline acceptance scoring. Next, select a
+bounded paid assessment plan before claiming model capability. Keep acceptance fixtures separate from prompt examples and development
 cases. Require model-submitted claims supported by executed evidence and explicit
 policy, rather than crediting traversal or historical fixture scores. Include
 cross-account protected reads, public resources, concealed resources and outages

@@ -91,6 +91,14 @@ def initial_messages(scenario="classic", prompt_variant="original", guidance_var
     guidance = ((GRAPH_GUIDANCE if guidance_variant == 'graph' else API_GUIDANCE) if discovery_scenario(scenario) else
                 "Test /api/documents/101, /api/invoices/inv_b7 and /api/documents/public "
                 "with alice and bob. Inspect returned content and use owner controls.")
+    if scenario == 'authorization_acceptance':
+        guidance = (
+            'Test read authorization for the supplied access policy with alice and bob. '
+            'Tenant payroll and confidential case notes are owner-only. Team handovers '
+            'are delegated to both accounts; published bulletins are readable by both. '
+            'Use actual owner and other-account probes, inspect record identity, and '
+            'distinguish denied access, unrelated representations and failed controls. '
+            'Only GET is supported. Paths and allowed actors are supplied by the policy.')
     if prompt_variant == "batching":
         guidance += (
             "\nBatch independent probes whose paths are already known into the same "

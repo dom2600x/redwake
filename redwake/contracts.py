@@ -14,7 +14,7 @@ DISCOVERY_RESOURCES = {
     "/api/records/guide_h6": {"owner": "alice", "private": False, "marker": "team-handbook", "behaviour": "public"},
     "/api/exports/export_z3": {"owner": "bob", "private": True, "marker": "billing-export", "behaviour": "broken"},
 }
-SCENARIOS = ("classic",) + DISCOVERY_SCENARIOS
+SCENARIOS = ("classic", "authorization_acceptance") + DISCOVERY_SCENARIOS
 
 
 def discovery_layout(scenario="discovery"):
@@ -56,6 +56,9 @@ def navigation_for(scenario="discovery"):
 def resources_for(scenario="classic"):
     if scenario not in SCENARIOS:
         raise ValueError("Unknown lab scenario")
+    if scenario == "authorization_acceptance":
+        from .acceptance_fixtures import RESOURCES as acceptance_resources
+        return acceptance_resources
     if scenario == "discovery_ids":
         paths = ("/api/records/doc_r8", "/api/files/file_t4", "/api/records/inv_s3",
                  "/api/records/note_v1", "/api/records/guide_w6", "/api/exports/export_y5")
@@ -67,8 +70,10 @@ def expected_verdicts(mode, scenario="classic"):
     results = []
     for record in resources_for(scenario).values():
         behaviour = record.get("behaviour", mode)
-        if mode == "broken" or behaviour == "broken":
+        if mode == "broken" or behaviour in ("broken", "mismatched", "owner_unavailable"):
             results.append("inconclusive")
+        elif len(record.get("allowed_actors", [])) == 2:
+            results.append("policy_allowed")
         elif not record["private"]:
             results.append("public_allowed")
         else:

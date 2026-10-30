@@ -145,3 +145,7 @@ question and a decision that cannot be made with deterministic tests or retained
 This is a lab harness, not a general penetration-testing product. It does not yet support external targets, arbitrary access contracts, container isolation, mutation testing, provider-reconciled billing or proof of model capability. The lab runs in a local Python thread with synthetic data and is not a container sandbox.
 
 See the [roadmap](docs/roadmap.md) for planned work.
+
+The [security acceptance foundation](docs/security-acceptance.md) adds reserved
+read-policy cases and negative controls. `acceptance-score BUNDLE` checks submitted
+claims offline; traversal and historical fixture scores do not establish model acceptance.

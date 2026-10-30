@@ -269,6 +269,9 @@ def run_result(state):
     if 'access_contract' in state['config']:
         from .submission import recheck
         result['submitted_findings'] = recheck(state)
+    if scenario == 'authorization_acceptance' and 'access_contract' in state['config']:
+        from .acceptance import score as acceptance_score
+        result['acceptance'] = acceptance_score(state)
     if 'cost_policy' in state['config']:
         from .costs import recheck
         result['cost'] = recheck(state)

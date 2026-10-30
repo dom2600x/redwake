@@ -74,10 +74,15 @@ def write_report(state, directory):
         report += ['## Provider usage ledger', '',
                    'Cached input and reasoning are subsets of input and output totals. Null means unknown. These records are not provider-reconciled billing.',
                    '', '```json', json.dumps(provider_usage, indent=2), '```', '']
-    (directory / "report.md").write_text("\n".join(report))
     (directory / "evidence.json").write_text(json.dumps(state["evidence"], indent=2) + "\n")
     result = {"run_id": state["id"], "results": results, "status": state["status"],
               "scenario": scenario, "metrics": metrics}
+    if scenario == 'authorization_acceptance' and 'access_contract' in state['config']:
+        from .acceptance import score as acceptance_score
+        result['acceptance'] = acceptance_score(state)
+        report += ['## Security acceptance', '',
+                   'Submitted claims are scored independently of probe coverage and historical fixture verdicts.',
+                   '', '```json', json.dumps(result['acceptance'], indent=2), '```', '']
     if diagnostics:
         result["diagnostics"] = diagnostics
     if 'access_contract' in state['config']:
@@ -86,5 +91,6 @@ def write_report(state, directory):
         result['cost'] = cost
     if 'usage_version' in state['config']:
         result['provider_usage'] = provider_usage
+    (directory / "report.md").write_text("\n".join(report))
     (directory / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     return directory / "report.md"
