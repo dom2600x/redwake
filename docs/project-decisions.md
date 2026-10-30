@@ -197,6 +197,6 @@ Ollama flat-rate valuation remains available. OpenAI Standard usage-value estima
 now accept explicit version 2 context/cache rate cards and preserve unreported
 cache-write uncertainty; exact billing reconciliation and other tiers remain unsupported.
 Anthropic Messages now preserves disjoint input/cache categories and tool-call replay;
-its monetary valuation remains a separate task. Daybreak and
+version 3 rate cards now provide opt-in monetary estimates and durable budget checks. Daybreak and
 Mythos access restrictions remain in effect. Neither adapter support nor tool protocol
 tests select a model for its security-analysis capability.

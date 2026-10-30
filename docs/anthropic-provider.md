@@ -75,12 +75,10 @@ billing completeness. Resume, replay, reports, single-run export and offline
 verification preserve these categories and recompute their arithmetic. Exports
 contain model text and captured synthetic responses; review them before sharing.
 
-## Pricing boundary
+## Estimated pricing and budgets
 
-Anthropic monetary valuation and `--pricing`/`--max-cost-usd` are unsupported in
-this milestone. Ollama/OpenAI cards cannot be applied to this route. Cache-write
-retention, context thresholds, processing mode and geography need a separate
-rate-card contract; the [pricing reference](anthropic-pricing.md) records those
-requirements without claiming exact API model IDs or account access. Token,
-call and time allowances are not a monetary spending cap. Use provider-side
-controls for paid runs. No cash charge or security-model ranking is inferred.
+Opt-in `--pricing` accepts version 3 Anthropic cards; see the
+[pricing contract](anthropic-pricing.md#executable-estimates). Version 1/2 cards
+cannot be applied to this route. `--max-cost-usd` enforces an estimated usage-value
+budget, not a provider cash cap. Token counts can exceed input reservations;
+provider-side spending controls remain necessary for a hard monetary limit.

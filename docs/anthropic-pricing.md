@@ -54,8 +54,50 @@ processing mode, inference geography and pricing provenance with cost calculatio
 Use reported token usage rather than assuming the same prompt has the same token count
 across models or providers. Confirm exact API model IDs before making the snapshot executable.
 
-Monetary valuation is not implemented. Credentials, model availability and billing
-have not been checked through API calls.
+Opt-in monetary estimates now use version 3 rate cards. Credentials, model
+availability and billing have not been checked through API calls.
 Recheck current rates before paid acceptance work and reconcile against provider billing
 where supported. Published price or model descriptions do not establish security capability;
 selection remains governed by the project's security acceptance criteria.
+
+## Executable estimates
+
+`--pricing examples/pricing/anthropic-template.json` illustrates the version 3
+schema with **synthetic rates and a placeholder model**. Copy it and replace the
+model, every rate, context threshold, multipliers, source and date with verified
+account-applicable values before paid use. No default model or executable price
+snapshot is inferred from the reference table above.
+
+Only direct, synchronous, standard-tier global execution with API version
+`2023-06-01` is supported. Processing mode and geography are explicit pricing
+assumptions matching the adapter's default request; geography is not independently
+reported or verified by the usage response. Batch, Fast, priority, US residency,
+partner clouds and hosted-tool charges need separate contracts and are rejected
+as card settings. Served model and reported service tier must match; missing or
+mismatched metadata retains the reservation and blocks further execution.
+
+All rates are decimal USD strings per million tokens. `input` prices ordinary
+input, `cached_input` prices reads, and `cache_write_5m`/`cache_write_1h` price
+replacement creation tokens. These categories are disjoint. The sum of all input
+categories selects the context tier: strictly above `context_threshold`, multiply
+all input categories by `long_input_multiplier` and output by
+`long_output_multiplier`. Use multipliers of one when no premium applies.
+
+Unknown creation retention yields a range between the declared write rates;
+zero creation needs no split. Missing counters remain unknown, with known
+categories valued separately. If known categories already exceed the threshold,
+the long tier is certain; otherwise a missing total retains both tier possibilities.
+Exact rate-card values require resolved categories and rates. They remain estimates,
+never reconciled provider cash charges.
+
+Before transport the SQLite checkpoint retains a reservation using
+`input_token_reservation` times the highest input/cache rate and long multiplier,
+plus the output allowance at the long output rate. Transport failures and crash
+recovery retain that exposure. Partial usage keeps the greater of the reservation
+and the known upper valuation; complete usage replaces the reservation with its
+valuation range. Resume rechecks ledger arithmetic, metadata and accumulated
+exposure before tools or new inference. An overrun stops execution immediately.
+Exports retain the policy and ledgers; `verify` recomputes estimates offline.
+
+Deterministic tests use synthetic rates and mocked transport; they establish
+accounting behavior, not account entitlement or actual billing.
