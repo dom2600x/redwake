@@ -3,7 +3,7 @@
 import json
 import time
 from .lab import ACTORS, allowed_paths
-from .contracts import RESOURCES
+from .contracts import resources_for
 from .verifier import assess, missing_checks, score, discovery_coverage
 from .guidance import response_links, discovery_scenario
 from .providers import ProviderError, initial_messages, provider_failure, validate_diagnostic
@@ -116,7 +116,7 @@ def investigate(store, state, origin, provider=None):
                         checks = discovery_checks(state["evidence"])
                     else:
                         observed = {(e["actor"], e["path"]) for e in state["evidence"]}
-                        checks = [{"actor": actor, "path": path} for path in RESOURCES for actor in ACTORS
+                        checks = [{"actor": actor, "path": path} for path in resources_for(scenario) for actor in ACTORS
                                   if (actor, path) not in observed]
                     state["pending"] = [{"function": {"name": "probe", "arguments": check}}
                                         for check in checks]

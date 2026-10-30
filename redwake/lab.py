@@ -47,7 +47,11 @@ def lab(mode="fixed", scenario="classic"):
                 status, body = 404, {"error": "not found"}
             elif mode == "broken" or behaviour == "broken":
                 status, body = 503, {"error": "unavailable"}
-            elif record["private"] and actor != record["owner"] and (mode != "vulnerable" or behaviour != "vulnerable"):
+            elif behaviour == 'owner_unavailable' and actor == record['owner']:
+                status, body = 503, {'error': 'unavailable'}
+            elif behaviour == 'mismatched' and actor != record['owner']:
+                status, body = 200, {'owner': record['owner'], 'data': 'unrelated-summary'}
+            elif record["private"] and actor not in record.get("allowed_actors", [record["owner"]]) and (mode != "vulnerable" or behaviour not in ("vulnerable", "owner_unavailable")):
                 status = 404 if mode == "concealed" or behaviour == "concealed" else 403
                 body = {"error": "denied"}
             else:

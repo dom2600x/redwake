@@ -56,7 +56,18 @@ def main(argv=None):
     finding.add_argument("--finding", type=Path, required=True)
     finding.add_argument("--bundle", type=Path, required=True)
     finding.add_argument("--output", type=Path, required=True)
+    acceptance = commands.add_parser('acceptance-score', help='Score submitted findings in a verified acceptance bundle offline')
+    acceptance.add_argument('directory', type=Path)
     args = parser.parse_args(argv)
+    if args.command == 'acceptance-score':
+        from .acceptance import score_bundle
+        try:
+            result = score_bundle(args.directory)
+        except (KeyError, OSError, TypeError, ValueError, AttributeError):
+            print('redwake: invalid acceptance evidence bundle', file=sys.stderr)
+            return 2
+        print(json.dumps(result))
+        return 0 if result['passed'] else 1
     if args.command == "validate-finding":
         from .findings import export_proof, read_json
         try:
@@ -78,7 +89,7 @@ def main(argv=None):
     if args.command == "export" and not Path(args.db).is_file():
         print("redwake: source database does not exist", file=sys.stderr)
         return 2
-    default_limits = DISCOVERY_LIMITS if discovery_scenario(getattr(args, "scenario", "classic")) else DEFAULT_LIMITS
+    default_limits = DISCOVERY_LIMITS if discovery_scenario(getattr(args, "scenario", "classic")) or getattr(args, "scenario", None) == "authorization_acceptance" else DEFAULT_LIMITS
     Path(args.db).parent.mkdir(parents=True, exist_ok=True)
     try:
         with open(str(args.db) + ".lock", "w") as lock:
@@ -144,6 +155,13 @@ def main(argv=None):
                         check_contract(contract, args.scenario)
                         if args.backend not in ('ollama', 'openai', 'anthropic'): raise ValueError('--contract requires a model backend')
                         config['access_contract'] = contract
+                    if args.scenario == 'authorization_acceptance':
+                        if args.backend == 'baseline' or args.mode != 'vulnerable':
+                            raise ValueError('Acceptance requires a model backend and vulnerable mode')
+                        from .acceptance_fixtures import contract
+                        if config.get('access_contract', contract()) != contract():
+                            raise ValueError('Acceptance requires its canonical access contract')
+                        config['access_contract'] = contract()
                     if args.pricing:
                         from .costs import validate_policy
                         config['cost_policy'] = dict(rate_card=json.loads(args.pricing.read_text()),

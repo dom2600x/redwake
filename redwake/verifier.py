@@ -25,7 +25,7 @@ def missing_checks(evidence, scenario="classic"):
         for actor in ACTOR_NAMES:
             observation = observations.get((actor, path))
             valid = contains_record(observation, resource)
-            if resource["private"] and actor != resource["owner"]:
+            if resource["private"] and actor not in resource.get("allowed_actors", [resource["owner"]]):
                 valid = valid or denied_record(observation, resource)
             if not valid:
                 checks.append({"actor": actor, "path": path})
@@ -43,7 +43,10 @@ def assess(evidence, scenario="classic"):
 
         verdict = "inconclusive"
         if contains_record(owner, resource) and other:
-            if resource["private"]:
+            if other_actor in resource.get("allowed_actors", []):
+                if contains_record(other, resource):
+                    verdict = "policy_allowed"
+            elif resource["private"]:
                 if contains_record(other, resource):
                     verdict = "vulnerable"
                 elif denied_record(other, resource):

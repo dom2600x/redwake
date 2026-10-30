@@ -58,3 +58,9 @@ execution and disjoint input/cache accounting.
 These are historical reports, not instructions to rerun an experiment. A new run
 produces a new result and should retain its own provenance. Use the roadmap for
 the next planned experiments.
+
+See [security acceptance](security-acceptance.md) for unfamiliar read-policy cases,
+negative controls and offline submitted-finding acceptance scoring.
+
+[Production readiness](production-readiness.md) records current evidence, release gates
+and decisions needed before live model selection or external-target support.
