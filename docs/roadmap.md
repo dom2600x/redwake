@@ -118,3 +118,6 @@ Measure accepted supported findings, missed findings, unsupported claims and
 negative-control false positives separately. Establish deterministic verifier
 controls first; any later paid model acceptance needs explicit models, bounded
 budgets and a stopping condition. Existing model scores do not establish capability.
+
+See the [production-readiness plan](production-readiness.md) for evidence-backed
+release gates and the boundary between a lab release and external-target support.
